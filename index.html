@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FilaCero — Agenda tu cita</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+    body{background:#F5F3FF;min-height:100vh;}
+    .header{background:#8B5CF6;padding:20px 16px 24px;color:#fff;}
+    .header-logo{font-size:22px;font-weight:900;letter-spacing:-0.5px;}
+    .header-sub{font-size:13px;opacity:0.85;margin-top:4px;}
+    .negocio-card{background:#fff;margin:16px;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(139,92,246,0.12);}
+    .negocio-nombre{font-size:22px;font-weight:900;color:#1C1E21;}
+    .negocio-cat{font-size:13px;color:#8B5CF6;font-weight:700;margin-top:4px;}
+    .negocio-dir{font-size:13px;color:#6B7280;margin-top:6px;}
+    .negocio-stars{font-size:14px;color:#F59E0B;font-weight:700;margin-top:6px;}
+    .section{margin:0 16px 16px;}
+    .section-title{font-size:15px;font-weight:800;color:#1C1E21;margin-bottom:10px;}
+    .card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+    .servicio-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F3F4F6;cursor:pointer;}
+    .servicio-item:last-child{border-bottom:none;}
+    .servicio-item.seleccionado{background:#F5F3FF;border-radius:10px;padding:12px;margin:-4px;}
+    .servicio-nombre{font-size:15px;font-weight:700;color:#1C1E21;}
+    .servicio-info{font-size:12px;color:#6B7280;margin-top:3px;}
+    .servicio-precio{font-size:16px;font-weight:900;color:#8B5CF6;}
+    .emp-list{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;}
+    .emp-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;min-width:70px;}
+    .emp-avatar{width:56px;height:56px;border-radius:16px;background:#F0F2F5;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#8B5CF6;border:2px solid #E5E7EB;}
+    .emp-avatar.sel{background:#8B5CF6;color:#fff;border-color:#8B5CF6;}
+    .emp-nombre{font-size:11px;font-weight:700;color:#65676B;text-align:center;}
+    .emp-nombre.sel{color:#8B5CF6;}
+    .dias-list{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;}
+    .dia-item{display:flex;flex-direction:column;align-items:center;min-width:52px;padding:10px 8px;border-radius:12px;background:#F0F2F5;cursor:pointer;border:2px solid transparent;}
+    .dia-item.sel{background:#8B5CF6;border-color:#8B5CF6;}
+    .dia-item.sel .dia-num,.dia-item.sel .dia-nom{color:#fff;}
+    .dia-num{font-size:18px;font-weight:900;color:#1C1E21;}
+    .dia-nom{font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;}
+    .slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .slot-item{padding:12px 8px;border-radius:10px;background:#F0F2F5;text-align:center;font-size:14px;font-weight:700;color:#1C1E21;cursor:pointer;border:2px solid transparent;}
+    .slot-item.sel{background:#8B5CF6;color:#fff;border-color:#8B5CF6;}
+    .slot-item.ocupado{background:#F3F4F6;color:#D1D5DB;cursor:not-allowed;}
+    .form-group{margin-bottom:14px;}
+    .form-label{font-size:13px;font-weight:700;color:#374151;margin-bottom:6px;display:block;}
+    .form-input{width:100%;padding:14px;border:2px solid #E5E7EB;border-radius:12px;font-size:15px;outline:none;}
+    .form-input:focus{border-color:#8B5CF6;}
+    .btn-primary{width:100%;padding:16px;background:#8B5CF6;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;margin-top:8px;}
+    .btn-primary:disabled{background:#C4B5FD;cursor:not-allowed;}
+    .btn-secondary{width:100%;padding:14px;background:#F0F2F5;color:#65676B;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;}
+    .step-indicator{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+    .step-dot{width:8px;height:8px;border-radius:50%;background:#E5E7EB;}
+    .step-dot.active{background:#8B5CF6;width:24px;border-radius:4px;}
+    .exito-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px;text-align:center;}
+    .exito-icon{font-size:80px;margin-bottom:24px;}
+    .exito-titulo{font-size:26px;font-weight:900;color:#1C1E21;margin-bottom:12px;}
+    .exito-sub{font-size:15px;color:#6B7280;line-height:1.6;}
+    .cita-resumen{background:#F5F3FF;border-radius:16px;padding:20px;margin:20px 0;text-align:left;width:100%;}
+    .cita-resumen-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #EDE9FE;}
+    .cita-resumen-row:last-child{border-bottom:none;}
+    .cita-resumen-label{font-size:13px;color:#6B7280;}
+    .cita-resumen-val{font-size:13px;font-weight:700;color:#1C1E21;}
+    .loading{display:flex;align-items:center;justify-content:center;padding:32px;}
+    .spinner{width:32px;height:32px;border:3px solid #E5E7EB;border-top-color:#8B5CF6;border-radius:50%;animation:spin 0.8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .error-msg{background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px;color:#DC2626;font-size:13px;margin-bottom:12px;}
+    .whatsapp-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#25D366;color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;text-decoration:none;}
+    .not-found{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px;text-align:center;}
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <div class="loading"><div class="spinner"></div></div>
+</div>
+
+<script>
+const { createClient } = supabase;
+const sb = createClient('https://djzloikdmahnqclmvhsf.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqemxvaWtkbWFobnFjbG12aHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDMzNTYsImV4cCI6MjA1OTcxOTM1Nn0.oFgKMsET9GIRGhEVjFBMPbRYrNAi7gv4LXsWkJexi3c');
+
+const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+let state = {
+  negocio: null,
+  servicios: [],
+  empleados: [],
+  slots: [],
+  step: 1, // 1=servicio, 2=empleado+dia, 3=hora, 4=datos, 5=exito
+  svcSel: null,
+  empSel: null,
+  diaSel: null,
+  slotSel: null,
+  nombre: '',
+  celular: '',
+  loading: false,
+  error: null,
+  citaId: null,
+};
+
+// Get negocio slug from URL
+function getSlug() {
+  const path = window.location.pathname;
+  const parts = path.split('/').filter(Boolean);
+  return parts[0] || null;
+}
+
+async function init() {
+  const slug = getSlug();
+  if (!slug) { showNotFound(); return; }
+  
+  render('<div class="loading"><div class="spinner"></div></div>');
+  
+  // Load negocio by slug or id
+  let { data: neg, error } = await sb.from('negocios')
+    .select('*')
+    .or(`slug.eq.${slug},id.eq.${slug}`)
+    .eq('activo', true)
+    .single();
+    
+  if (error || !neg) { showNotFound(); return; }
+  state.negocio = neg;
+  
+  // Load servicios
+  const { data: svcs } = await sb.from('servicios')
+    .select('*').eq('negocio_id', neg.id).eq('activo', true).order('nombre');
+  state.servicios = svcs || [];
+  
+  // Load empleados
+  const { data: emps } = await sb.from('empleados')
+    .select('*').eq('negocio_id', neg.id).eq('activo', true);
+  state.empleados = emps || [];
+  
+  renderApp();
+}
+
+function showNotFound() {
+  document.getElementById('app').innerHTML = `
+    <div class="not-found">
+      <div style="font-size:60px;margin-bottom:20px">🔍</div>
+      <div style="font-size:22px;font-weight:900;color:#1C1E21;margin-bottom:8px">Negocio no encontrado</div>
+      <div style="font-size:14px;color:#6B7280">Verifica el link o escanea el QR nuevamente</div>
+    </div>`;
+}
+
+function render(html) {
+  document.getElementById('app').innerHTML = html;
+}
+
+function renderApp() {
+  const neg = state.negocio;
+  const stars = neg.promedio_estrellas > 0 ? `⭐ ${Number(neg.promedio_estrellas).toFixed(1)} · ${neg.total_resenas||0} reseñas` : '';
+  
+  let content = '';
+  
+  if (state.step === 5) {
+    renderExito(); return;
+  }
+  
+  const steps = ['Servicio','Fecha y hora','Tus datos'];
+  const stepIdx = state.step <= 2 ? 0 : state.step === 3 ? 1 : 2;
+  
+  const stepHtml = `<div class="step-indicator">
+    ${steps.map((s,i) => `<div class="step-dot ${i===stepIdx?'active':''}"></div>`).join('')}
+    <span style="font-size:12px;color:#6B7280;margin-left:4px">${steps[stepIdx]}</span>
+  </div>`;
+
+  if (state.step === 1) content = renderServicios();
+  else if (state.step === 2) content = renderEmpleadoYDia();
+  else if (state.step === 3) content = renderHoras();
+  else if (state.step === 4) content = renderDatos();
+  
+  render(`
+    <div class="header">
+      <div class="header-logo">💜 FilaCero</div>
+      <div class="header-sub">Agenda sin filas · Sin llamadas</div>
+    </div>
+    <div class="negocio-card">
+      <div class="negocio-nombre">${neg.nombre}</div>
+      <div class="negocio-cat">${neg.categoria||'Negocio'}</div>
+      ${neg.direccion ? `<div class="negocio-dir">📍 ${neg.direccion}</div>` : ''}
+      ${stars ? `<div class="negocio-stars">${stars}</div>` : ''}
+    </div>
+    <div class="section">
+      ${stepHtml}
+      ${state.error ? `<div class="error-msg">⚠️ ${state.error}</div>` : ''}
+      ${content}
+    </div>
+  `);
+}
+
+function renderServicios() {
+  return `
+    <div class="card">
+      <div class="section-title">✂️ ¿Qué servicio necesitas?</div>
+      ${state.servicios.map(s => `
+        <div class="servicio-item ${state.svcSel?.id===s.id?'seleccionado':''}" onclick="selSvc('${s.id}')">
+          <div>
+            <div class="servicio-nombre">${s.nombre}</div>
+            <div class="servicio-info">⏱ ${s.duracion_min} min</div>
+          </div>
+          <div class="servicio-precio">${Number(s.precio||0).toLocaleString('es-CO')}</div>
+        </div>
+      `).join('')}
+    </div>
+    ${state.svcSel ? `<button class="btn-primary" onclick="goStep(2)">Continuar →</button>` : ''}
+  `;
+}
+
+function selSvc(id) {
+  state.svcSel = state.servicios.find(s=>s.id===id);
+  state.empSel = null; state.diaSel = null; state.slotSel = null;
+  state.error = null;
+  renderApp();
+}
+
+function renderEmpleadoYDia() {
+  // Generate next 14 days
+  const dias = [];
+  for(let i=0;i<14;i++){
+    const d = new Date(); d.setDate(d.getDate()+i);
+    dias.push(d);
+  }
+  
+  const empsHtml = state.empleados.length > 1 ? `
+    <div class="section-title" style="margin-top:16px">👤 ¿Con quién?</div>
+    <div class="emp-list">
+      <div class="emp-item" onclick="selEmp(null)">
+        <div class="emp-avatar ${state.empSel===null?'sel':''}">🎲</div>
+        <div class="emp-nombre ${state.empSel===null?'sel':''}">Cualquiera</div>
+      </div>
+      ${state.empleados.map(e=>`
+        <div class="emp-item" onclick="selEmp('${e.id}')">
+          <div class="emp-avatar ${state.empSel===e.id?'sel':''}">
+            ${(e.nombre||'?')[0].toUpperCase()}
+          </div>
+          <div class="emp-nombre ${state.empSel===e.id?'sel':''}">
+            ${e.nombre.split(' ')[0]}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+  
+  return `
+    <div class="card">
+      <div class="section-title">📅 ¿Qué día?</div>
+      <div class="dias-list">
+        ${dias.map(d=>{
+          const key = d.toLocaleDateString('en-CA',{timeZone:'America/Bogota'});
+          const sel = state.diaSel===key;
+          return `<div class="dia-item ${sel?'sel':''}" onclick="selDia('${key}')">
+            <div class="dia-num">${d.getDate()}</div>
+            <div class="dia-nom">${DIAS[d.getDay()]}</div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${empsHtml}
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-secondary" onclick="goStep(1)" style="flex:1">← Volver</button>
+      ${state.diaSel ? `<button class="btn-primary" style="flex:2" onclick="goStep(3)">Ver horarios →</button>` : ''}
+    </div>
+  `;
+}
+
+function selEmp(id) {
+  state.empSel = id;
+  state.slotSel = null;
+  renderApp();
+}
+
+async function selDia(key) {
+  state.diaSel = key;
+  state.slotSel = null;
+  state.error = null;
+  renderApp();
+}
+
+async function renderHoras() {
+  if(state.loading) return '<div class="loading"><div class="spinner"></div></div>';
+  
+  // Load slots
+  state.loading = true;
+  renderApp();
+  
+  try {
+    const { data, error } = await sb.rpc('obtener_slots_disponibles', {
+      p_negocio_id: state.negocio.id,
+      p_fecha: state.diaSel,
+      p_duracion_min: state.svcSel.duracion_min,
+      p_empleado_id: state.empSel || null
+    });
+    state.slots = data || [];
+  } catch(e) {
+    state.slots = [];
+  }
+  state.loading = false;
+  
+  const html = `
+    <div class="card">
+      <div class="section-title">🕐 ¿A qué hora?</div>
+      ${state.slots.length === 0 ? 
+        '<div style="text-align:center;padding:20px;color:#6B7280">No hay horarios disponibles para este día</div>' :
+        `<div class="slots-grid">
+          ${state.slots.map(s=>{
+            const ocupado = s.disponible === false;
+            const sel = state.slotSel === s.hora;
+            return `<div class="slot-item ${ocupado?'ocupado':sel?'sel':''}"
+              onclick="${ocupado?'':'selSlot(''+s.hora+'')'}">
+              ${s.hora}
+            </div>`;
+          }).join('')}
+        </div>`
+      }
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-secondary" onclick="goStep(2)" style="flex:1">← Volver</button>
+      ${state.slotSel ? `<button class="btn-primary" style="flex:2" onclick="goStep(4)">Confirmar hora →</button>` : ''}
+    </div>
+  `;
+  
+  render(`
+    <div class="header">
+      <div class="header-logo">💜 FilaCero</div>
+      <div class="header-sub">Agenda sin filas · Sin llamadas</div>
+    </div>
+    <div class="negocio-card">
+      <div class="negocio-nombre">${state.negocio.nombre}</div>
+    </div>
+    <div class="section">
+      <div class="step-indicator">
+        <div class="step-dot"></div><div class="step-dot active"></div><div class="step-dot"></div>
+        <span style="font-size:12px;color:#6B7280;margin-left:4px">Fecha y hora</span>
+      </div>
+      ${state.error ? `<div class="error-msg">⚠️ ${state.error}</div>` : ''}
+      ${html}
+    </div>
+  `);
+}
+
+function selSlot(hora) {
+  state.slotSel = hora;
+  state.error = null;
+  renderApp();
+}
+
+function renderDatos() {
+  return `
+    <div class="card">
+      <div class="section-title">👤 Tus datos</div>
+      <div style="background:#F5F3FF;border-radius:12px;padding:12px;margin-bottom:16px;">
+        <div style="font-size:13px;color:#6B7280;">Tu cita</div>
+        <div style="font-size:15px;font-weight:800;color:#1C1E21;margin-top:4px;">${state.svcSel?.nombre}</div>
+        <div style="font-size:13px;color:#8B5CF6;margin-top:2px;">${state.diaSel} · ${state.slotSel}</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tu nombre</label>
+        <input class="form-input" type="text" placeholder="Ej: Carlos Rodríguez"
+          value="${state.nombre}" oninput="state.nombre=this.value" id="inp-nombre"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tu celular (WhatsApp)</label>
+        <input class="form-input" type="tel" placeholder="Ej: 3001234567"
+          value="${state.celular}" oninput="state.celular=this.value" id="inp-celular"/>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="confirmar()" ${state.loading?'disabled':''}>
+      ${state.loading ? '⏳ Agendando...' : '✅ Confirmar cita'}
+    </button>
+    <button class="btn-secondary" onclick="goStep(3)">← Volver</button>
+  `;
+}
+
+async function confirmar() {
+  state.nombre = document.getElementById('inp-nombre')?.value || state.nombre;
+  state.celular = document.getElementById('inp-celular')?.value || state.celular;
+  
+  if(!state.nombre.trim()) { state.error='Por favor ingresa tu nombre'; renderApp(); return; }
+  if(!state.celular.trim() || state.celular.length < 10) { state.error='Por favor ingresa tu celular'; renderApp(); return; }
+  
+  state.loading = true; state.error = null;
+  renderApp();
+  
+  try {
+    // Find or create cliente
+    let { data: cli } = await sb.from('clientes')
+      .select('id').eq('celular', state.celular).single();
+    
+    let clienteId = cli?.id;
+    if(!clienteId) {
+      const { data: newCli, error: errCli } = await sb.from('clientes').insert({
+        nombre: state.nombre.trim(),
+        celular: state.celular.trim(),
+        activo: true
+      }).select('id').single();
+      if(errCli) throw errCli;
+      clienteId = newCli.id;
+    }
+    
+    // Create cita
+    const { data: cita, error: errCita } = await sb.from('citas').insert({
+      negocio_id: state.negocio.id,
+      cliente_id: clienteId,
+      servicio_id: state.svcSel.id,
+      empleado_id: state.empSel || null,
+      fecha_hora: `${state.diaSel}T${state.slotSel}:00-05:00`,
+      estado: 'pendiente',
+      precio_total: state.svcSel.precio || 0,
+      notas: `Agendado desde web por ${state.nombre}`
+    }).select('id').single();
+    
+    if(errCita) {
+      if((errCita.message||'').includes('unique') || (errCita.message||'').includes('duplicate')) {
+        state.error = 'Esa hora ya fue tomada. Por favor elige otra.';
+        state.step = 3; state.slotSel = null;
+      } else {
+        state.error = errCita.message;
+      }
+      state.loading = false; renderApp(); return;
+    }
+    
+    state.citaId = cita.id;
+    state.loading = false;
+    state.step = 5;
+    renderExito();
+    
+  } catch(e) {
+    state.error = e.message || 'Error al agendar. Intenta de nuevo.';
+    state.loading = false;
+    renderApp();
+  }
+}
+
+function renderExito() {
+  const neg = state.negocio;
+  const waMsg = encodeURIComponent(
+    `Hola! Acabo de agendar una cita en ${neg.nombre} para el ${state.diaSel} a las ${state.slotSel} — ${state.svcSel?.nombre}. ¡Nos vemos! 💜`
+  );
+  const waUrl = neg.whatsapp ? `https://wa.me/57${neg.whatsapp.replace(/\D/g,'')}?text=${waMsg}` : null;
+  
+  document.getElementById('app').innerHTML = `
+    <div class="exito-screen">
+      <div class="exito-icon">🎉</div>
+      <div class="exito-titulo">¡Cita agendada!</div>
+      <div class="exito-sub">Tu cita ha sido confirmada en<br><strong>${neg.nombre}</strong></div>
+      <div class="cita-resumen">
+        <div class="cita-resumen-row">
+          <span class="cita-resumen-label">Servicio</span>
+          <span class="cita-resumen-val">${state.svcSel?.nombre}</span>
+        </div>
+        <div class="cita-resumen-row">
+          <span class="cita-resumen-label">Fecha</span>
+          <span class="cita-resumen-val">${state.diaSel}</span>
+        </div>
+        <div class="cita-resumen-row">
+          <span class="cita-resumen-label">Hora</span>
+          <span class="cita-resumen-val">${state.slotSel}</span>
+        </div>
+        <div class="cita-resumen-row">
+          <span class="cita-resumen-label">Tu nombre</span>
+          <span class="cita-resumen-val">${state.nombre}</span>
+        </div>
+      </div>
+      ${waUrl ? `<a href="${waUrl}" class="whatsapp-btn" target="_blank">
+        💬 Confirmar por WhatsApp
+      </a>` : ''}
+      <button class="btn-secondary" onclick="location.reload()" style="margin-top:8px">
+        Agendar otra cita
+      </button>
+      <div style="margin-top:20px;font-size:12px;color:#9CA3AF;">
+        Powered by 💜 FilaCero
+      </div>
+    </div>
+  `;
+}
+
+function goStep(n) {
+  state.step = n; state.error = null;
+  if(n === 3) { renderHoras(); return; }
+  renderApp();
+}
+
+// Start
+init();
+</script>
+</body>
+</html>
