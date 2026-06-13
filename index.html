@@ -4,484 +4,375 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FilaCero — Agenda tu cita</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
-    body{background:#F5F3FF;min-height:100vh;}
-    .header{background:#8B5CF6;padding:20px 16px 24px;color:#fff;}
-    .header-logo{font-size:22px;font-weight:900;letter-spacing:-0.5px;}
-    .header-sub{font-size:13px;opacity:0.85;margin-top:4px;}
-    .negocio-card{background:#fff;margin:16px;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(139,92,246,0.12);}
-    .negocio-nombre{font-size:22px;font-weight:900;color:#1C1E21;}
-    .negocio-cat{font-size:13px;color:#8B5CF6;font-weight:700;margin-top:4px;}
-    .negocio-dir{font-size:13px;color:#6B7280;margin-top:6px;}
-    .negocio-stars{font-size:14px;color:#F59E0B;font-weight:700;margin-top:6px;}
-    .section{margin:0 16px 16px;}
-    .section-title{font-size:15px;font-weight:800;color:#1C1E21;margin-bottom:10px;}
-    .card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
-    .servicio-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F3F4F6;cursor:pointer;}
-    .servicio-item:last-child{border-bottom:none;}
-    .servicio-item.seleccionado{background:#F5F3FF;border-radius:10px;padding:12px;margin:-4px;}
-    .servicio-nombre{font-size:15px;font-weight:700;color:#1C1E21;}
-    .servicio-info{font-size:12px;color:#6B7280;margin-top:3px;}
-    .servicio-precio{font-size:16px;font-weight:900;color:#8B5CF6;}
-    .emp-list{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;}
-    .emp-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;min-width:70px;}
-    .emp-avatar{width:56px;height:56px;border-radius:16px;background:#F0F2F5;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#8B5CF6;border:2px solid #E5E7EB;}
-    .emp-avatar.sel{background:#8B5CF6;color:#fff;border-color:#8B5CF6;}
-    .emp-nombre{font-size:11px;font-weight:700;color:#65676B;text-align:center;}
-    .emp-nombre.sel{color:#8B5CF6;}
-    .dias-list{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;}
-    .dia-item{display:flex;flex-direction:column;align-items:center;min-width:52px;padding:10px 8px;border-radius:12px;background:#F0F2F5;cursor:pointer;border:2px solid transparent;}
-    .dia-item.sel{background:#8B5CF6;border-color:#8B5CF6;}
-    .dia-item.sel .dia-num,.dia-item.sel .dia-nom{color:#fff;}
-    .dia-num{font-size:18px;font-weight:900;color:#1C1E21;}
-    .dia-nom{font-size:10px;font-weight:700;color:#6B7280;text-transform:uppercase;}
-    .slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-    .slot-item{padding:12px 8px;border-radius:10px;background:#F0F2F5;text-align:center;font-size:14px;font-weight:700;color:#1C1E21;cursor:pointer;border:2px solid transparent;}
-    .slot-item.sel{background:#8B5CF6;color:#fff;border-color:#8B5CF6;}
-    .slot-item.ocupado{background:#F3F4F6;color:#D1D5DB;cursor:not-allowed;}
-    .form-group{margin-bottom:14px;}
-    .form-label{font-size:13px;font-weight:700;color:#374151;margin-bottom:6px;display:block;}
-    .form-input{width:100%;padding:14px;border:2px solid #E5E7EB;border-radius:12px;font-size:15px;outline:none;}
-    .form-input:focus{border-color:#8B5CF6;}
-    .btn-primary{width:100%;padding:16px;background:#8B5CF6;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;margin-top:8px;}
-    .btn-primary:disabled{background:#C4B5FD;cursor:not-allowed;}
-    .btn-secondary{width:100%;padding:14px;background:#F0F2F5;color:#65676B;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;}
-    .step-indicator{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
-    .step-dot{width:8px;height:8px;border-radius:50%;background:#E5E7EB;}
-    .step-dot.active{background:#8B5CF6;width:24px;border-radius:4px;}
-    .exito-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px;text-align:center;}
-    .exito-icon{font-size:80px;margin-bottom:24px;}
-    .exito-titulo{font-size:26px;font-weight:900;color:#1C1E21;margin-bottom:12px;}
-    .exito-sub{font-size:15px;color:#6B7280;line-height:1.6;}
-    .cita-resumen{background:#F5F3FF;border-radius:16px;padding:20px;margin:20px 0;text-align:left;width:100%;}
-    .cita-resumen-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #EDE9FE;}
-    .cita-resumen-row:last-child{border-bottom:none;}
-    .cita-resumen-label{font-size:13px;color:#6B7280;}
-    .cita-resumen-val{font-size:13px;font-weight:700;color:#1C1E21;}
-    .loading{display:flex;align-items:center;justify-content:center;padding:32px;}
-    .spinner{width:32px;height:32px;border:3px solid #E5E7EB;border-top-color:#8B5CF6;border-radius:50%;animation:spin 0.8s linear infinite;}
+    :root{--purple:#8A3FFC;--purple-dark:#5E17EB;--black:#000;--white:#fff;--gray:#F0F0F0;--gray2:#D9D9D9;--shadow:0 4px 20px rgba(138,63,252,0.18);--r:18px;--t:0.3s ease;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Lato',sans-serif;background:#fff;color:#222;overflow-x:hidden;}
+    h1,h2,h3,h4{font-family:'Montserrat',sans-serif;}
+    #loading{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s;}
+    .logo-txt{font-family:'Montserrat',sans-serif;font-size:36px;font-weight:900;color:#fff;}
+    .logo-txt span{color:var(--purple);}
+    .spinner{width:36px;height:36px;border:3px solid rgba(138,63,252,0.25);border-top-color:var(--purple);border-radius:50%;animation:spin 0.8s linear infinite;margin-top:20px;}
     @keyframes spin{to{transform:rotate(360deg);}}
-    .error-msg{background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px;color:#DC2626;font-size:13px;margin-bottom:12px;}
-    .whatsapp-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#25D366;color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;text-decoration:none;}
-    .not-found{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px;text-align:center;}
+    /* HERO */
+    #hero{position:relative;min-height:100vh;background:linear-gradient(160deg,#050505 0%,#150828 50%,#050505 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 24px 100px;overflow:hidden;}
+    #hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(138,63,252,0.18) 0%,transparent 65%);}
+    #hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:80px;background:linear-gradient(to top,#fff,transparent);}
+    .hero-brand{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;color:#fff;position:relative;z-index:1;margin-bottom:28px;letter-spacing:-0.5px;}
+    .hero-brand span{color:var(--purple);}
+    .hero-badge{display:inline-block;background:var(--purple);color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:8px 22px;border-radius:30px;margin-bottom:18px;position:relative;z-index:1;}
+    .hero-name{font-family:'Montserrat',sans-serif;font-size:clamp(30px,7vw,62px);font-weight:900;color:#fff;line-height:1.1;text-transform:uppercase;letter-spacing:-1px;position:relative;z-index:1;margin-bottom:14px;}
+    .star{color:var(--purple);margin:0 10px;}
+    .hero-desc{font-size:17px;color:var(--purple);font-weight:600;font-family:'Montserrat',sans-serif;margin-bottom:12px;position:relative;z-index:1;}
+    .hero-tag{font-size:12px;color:rgba(255,255,255,0.5);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:44px;position:relative;z-index:1;}
+    .btn-cta{display:inline-block;background:var(--purple);color:#fff;font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;padding:18px 48px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 8px 30px rgba(138,63,252,0.4);transition:var(--t);position:relative;z-index:1;letter-spacing:0.3px;}
+    .btn-cta:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(138,63,252,0.5);}
+    /* CONTACTO */
+    #contacto{padding:80px 24px;background:#fff;}
+    .contacto-inner{max-width:860px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+    .qr-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;}
+    .qr-frame{border:4px solid var(--purple);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);background:#fff;}
+    .qr-lbl{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--purple);letter-spacing:2.5px;text-transform:uppercase;}
+    .info-title{font-size:clamp(22px,4vw,32px);font-weight:900;color:#000;margin-bottom:24px;line-height:1.25;}
+    .info-title span{color:var(--purple);}
+    .c-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+    .c-icon{width:46px;height:46px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:var(--shadow);}
+    .c-icon svg{width:20px;height:20px;fill:#fff;}
+    .c-txt{font-size:14px;color:#444;font-weight:500;line-height:1.4;}
+    /* FEATURES */
+    #features{background:var(--gray);padding:80px 24px;}
+    .sec-title{text-align:center;font-family:'Montserrat',sans-serif;font-size:clamp(20px,4vw,34px);font-weight:900;color:#000;margin-bottom:44px;}
+    .sec-title span{color:var(--purple);}
+    .feat-grid{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;}
+    .feat-card{background:#fff;border-radius:var(--r);padding:26px 16px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,0.06);transition:var(--t);cursor:default;}
+    .feat-card:hover{transform:scale(1.05);box-shadow:var(--shadow);}
+    .feat-icon{width:54px;height:54px;border-radius:14px;background:var(--gray);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;transition:var(--t);}
+    .feat-card:hover .feat-icon{background:var(--purple);}
+    .feat-icon svg{width:26px;height:26px;stroke:var(--purple);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:var(--t);}
+    .feat-card:hover .feat-icon svg{stroke:#fff;}
+    .feat-txt{font-size:12px;font-weight:700;color:#333;font-family:'Montserrat',sans-serif;}
+    /* SERVICIOS */
+    #servicios{padding:80px 24px;background:#fff;}
+    .svc-grid{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;}
+    .svc-card{background:var(--gray);border-radius:var(--r);padding:22px 14px;text-align:center;transition:var(--t);}
+    .svc-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+    .svc-emoji{font-size:34px;display:block;margin-bottom:10px;}
+    .svc-name{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:#222;}
+    .svc-price{font-size:17px;font-weight:900;color:var(--purple);margin-top:6px;font-family:'Montserrat',sans-serif;}
+    .svc-star{color:var(--purple);font-size:11px;margin-top:4px;}
+    /* CTA */
+    #cta{background:linear-gradient(135deg,#000 0%,#150828 100%);padding:80px 24px;text-align:center;}
+    #cta h2{font-size:clamp(26px,5vw,46px);font-weight:900;color:#fff;margin-bottom:14px;}
+    #cta h2 span{color:var(--purple);}
+    #cta p{color:rgba(255,255,255,0.6);font-size:15px;margin-bottom:36px;}
+    /* FOOTER */
+    footer{background:#000;padding:36px 24px;text-align:center;}
+    .foot-logo{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:900;color:#fff;margin-bottom:6px;}
+    .foot-logo span{color:var(--purple);}
+    .foot-tag{color:rgba(255,255,255,0.35);font-size:11px;letter-spacing:2px;text-transform:uppercase;}
+    .foot-url{color:var(--purple);font-size:12px;margin-top:6px;font-weight:700;}
+    /* BOOKING */
+    #overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1000;align-items:flex-end;justify-content:center;}
+    #overlay.open{display:flex;}
+    #panel{background:#fff;border-radius:24px 24px 0 0;padding:26px 20px 44px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+    .p-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+    .p-head h3{font-family:'Montserrat',sans-serif;font-size:19px;font-weight:900;color:#000;}
+    .btn-x{background:var(--gray);border:none;border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer;}
+    .dots{display:flex;gap:5px;margin-bottom:18px;}
+    .dot{width:8px;height:8px;border-radius:4px;background:var(--gray2);transition:var(--t);}
+    .dot.on{width:22px;background:var(--purple);}
+    .svc-list{display:flex;flex-direction:column;gap:9px;}
+    .si{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-radius:13px;border:2px solid var(--gray2);cursor:pointer;transition:var(--t);}
+    .si:hover,.si.on{border-color:var(--purple);background:#f5efff;}
+    .si-name{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;color:#222;}
+    .si-info{font-size:11px;color:#999;margin-top:2px;}
+    .si-price{font-size:15px;font-weight:900;color:var(--purple);font-family:'Montserrat',sans-serif;}
+    .emp-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;}
+    .eb{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:60px;cursor:pointer;border:none;background:none;}
+    .ea{width:50px;height:50px;border-radius:13px;background:var(--gray);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:19px;font-weight:900;color:var(--purple);border:2px solid var(--gray2);transition:var(--t);}
+    .eb.on .ea{background:var(--purple);color:#fff;border-color:var(--purple);}
+    .en{font-size:10px;font-weight:700;color:#777;font-family:'Montserrat',sans-serif;}
+    .dias{display:flex;gap:7px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;}
+    .db{min-width:48px;padding:9px 7px;border-radius:12px;background:var(--gray);border:2px solid transparent;cursor:pointer;text-align:center;transition:var(--t);}
+    .db.on{background:var(--purple);border-color:var(--purple);}
+    .dn{font-size:17px;font-weight:900;color:#222;font-family:'Montserrat',sans-serif;}
+    .dd{font-size:9px;font-weight:700;color:#999;text-transform:uppercase;}
+    .db.on .dn,.db.on .dd{color:#fff;}
+    .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px;}
+    .sb{padding:11px;border-radius:10px;background:var(--gray);border:2px solid transparent;cursor:pointer;font-size:13px;font-weight:700;color:#222;font-family:'Montserrat',sans-serif;transition:var(--t);}
+    .sb.on{background:var(--purple);color:#fff;}
+    .sb.ocu{color:#ccc;cursor:not-allowed;}
+    .fi{width:100%;padding:13px 15px;border:2px solid var(--gray2);border-radius:13px;font-size:15px;font-family:'Lato',sans-serif;outline:none;transition:var(--t);margin-bottom:11px;}
+    .fi:focus{border-color:var(--purple);}
+    .fl{font-size:12px;font-weight:700;color:#555;margin-bottom:5px;display:block;font-family:'Montserrat',sans-serif;}
+    .bp{width:100%;padding:15px;background:var(--purple);color:#fff;border:none;border-radius:13px;font-size:15px;font-weight:800;font-family:'Montserrat',sans-serif;cursor:pointer;box-shadow:0 4px 18px rgba(138,63,252,0.3);transition:var(--t);margin-top:7px;}
+    .bp:hover{transform:translateY(-2px);}
+    .bp:disabled{background:#ccc;cursor:not-allowed;transform:none;box-shadow:none;}
+    .bb{width:100%;padding:13px;background:var(--gray);color:#777;border:none;border-radius:13px;font-size:13px;font-weight:700;font-family:'Montserrat',sans-serif;cursor:pointer;margin-top:7px;}
+    .err{background:#fff0f0;border:1px solid #ffcdd2;border-radius:10px;padding:11px;color:#c62828;font-size:12px;margin-bottom:11px;}
+    .ex-icon{font-size:68px;margin-bottom:14px;}
+    .ex-title{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:900;color:#000;margin-bottom:7px;}
+    .ex-sub{color:#777;font-size:13px;line-height:1.6;margin-bottom:18px;}
+    .csum{background:var(--gray);border-radius:13px;padding:14px;text-align:left;margin-bottom:14px;}
+    .cr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray2);}
+    .cr:last-child{border:none;}
+    .cl{font-size:12px;color:#999;}
+    .cv{font-size:12px;font-weight:700;color:#222;font-family:'Montserrat',sans-serif;}
+    .bwa{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:13px;background:#25D366;color:#fff;border:none;border-radius:13px;font-size:14px;font-weight:700;font-family:'Montserrat',sans-serif;cursor:pointer;transition:var(--t);text-decoration:none;}
+    .bwa:hover{background:#1db954;}
+    @media(max-width:600px){.contacto-inner{grid-template-columns:1fr;gap:36px;}.qr-wrap{order:-1;}}
   </style>
 </head>
 <body>
+<div id="loading"><div class="logo-txt">Fila<span>Cero</span></div><div class="spinner"></div></div>
+<div id="main" style="display:none">
 
-<div id="app">
-  <div class="loading"><div class="spinner"></div></div>
+<section id="hero">
+  <div class="hero-brand">Fila<span>Cero</span></div>
+  <div class="hero-badge">✨ Bienvenido a</div>
+  <h1 class="hero-name"><span class="star">★</span><span id="h-nombre">Negocio</span><span class="star">★</span></h1>
+  <p class="hero-desc" id="h-desc">Agenda tu cita en segundos</p>
+  <p class="hero-tag">Sin filas · Sin estrés · Más clientes felices</p>
+  <button class="btn-cta" onclick="openBooking()">📅 Agenda tu cita ahora</button>
+</section>
+
+<section id="contacto">
+  <div class="contacto-inner">
+    <div class="qr-wrap">
+      <div class="qr-frame"><div id="qr"></div></div>
+      <div class="qr-lbl">Escanea para agendar</div>
+    </div>
+    <div>
+      <div class="info-title">Agenda <span>sin llamadas</span><br>en 30 segundos</div>
+      <div id="c-dir" style="display:none" class="c-row">
+        <div class="c-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+        <span class="c-txt" id="t-dir"></span>
+      </div>
+      <div id="c-wa" style="display:none" class="c-row">
+        <div class="c-icon"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.119.553 4.107 1.523 5.838L.057 23.25l5.563-1.457A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.659-.52-5.17-1.424l-.37-.219-3.302.866.88-3.223-.24-.381A9.938 9.938 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg></div>
+        <span class="c-txt" id="t-wa"></span>
+      </div>
+      <div class="c-row">
+        <div class="c-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg></div>
+        <span class="c-txt">Agenda disponible 24/7</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <h2 class="sec-title">¿Por qué <span>FilaCero</span>?</h2>
+  <div class="feat-grid">
+    <div class="feat-card"><div class="feat-icon"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg></div><div class="feat-txt">Sin llamadas</div></div>
+    <div class="feat-card"><div class="feat-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="feat-txt">Agenda 24/7</div></div>
+    <div class="feat-card"><div class="feat-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="feat-txt">Confirmación inmediata</div></div>
+    <div class="feat-card"><div class="feat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="feat-txt">Sin esperas</div></div>
+    <div class="feat-card"><div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="feat-txt">Clientes felices</div></div>
+  </div>
+</section>
+
+<section id="servicios">
+  <h2 class="sec-title">★ Nuestros <span>Servicios</span> ★</h2>
+  <div class="svc-grid" id="svc-grid"></div>
+</section>
+
+<section id="cta">
+  <h2>Agenda tu cita <span>ahora</span></h2>
+  <p>Elige tu servicio, empleado y hora favorita en segundos</p>
+  <button class="btn-cta" onclick="openBooking()">📅 Agendar — Es gratis</button>
+</section>
+
+<footer>
+  <div class="foot-logo">Fila<span>Cero</span></div>
+  <div class="foot-tag">Sin filas · Sin estrés · Más clientes felices</div>
+  <div class="foot-url">filacero-web.vercel.app</div>
+</footer>
+</div>
+
+<!-- BOOKING -->
+<div id="overlay" onclick="if(event.target===this)closeBooking()">
+<div id="panel" onclick="event.stopPropagation()">
+  <div class="p-head"><h3 id="p-title">Elige tu servicio</h3><button class="btn-x" onclick="closeBooking()">✕</button></div>
+  <div class="dots" id="dots"></div>
+  <div id="p-content"></div>
+</div>
 </div>
 
 <script>
-const { createClient } = supabase;
-const sb = createClient('https://djzloikdmahnqclmvhsf.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqemxvaWtkbWFobnFjbG12aHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDMzNTYsImV4cCI6MjA1OTcxOTM1Nn0.oFgKMsET9GIRGhEVjFBMPbRYrNAi7gv4LXsWkJexi3c');
+const {createClient}=supabase;
+const sb=createClient('https://djzloikdmahnqclmvhsf.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqemxvaWtkbWFobnFjbG12aHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxNDMzNTYsImV4cCI6MjA1OTcxOTM1Nn0.oFgKMsET9GIRGhEVjFBMPbRYrNAi7gv4LXsWkJexi3c');
+const DIAS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const EMOJIS=['✂️','💅','💆','🪮','💈','🧖','👶','💋','🌟','✨'];
+let neg=null,svcs=[],emps=[],step=1,svcSel=null,empSel=null,diaSel=null,slotSel=null,slots=[];
+let nombre='',celular='',loading=false,err='';
 
-const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+function getSlug(){return location.pathname.split('/').filter(Boolean)[0]||null;}
 
-let state = {
-  negocio: null,
-  servicios: [],
-  empleados: [],
-  slots: [],
-  step: 1, // 1=servicio, 2=empleado+dia, 3=hora, 4=datos, 5=exito
-  svcSel: null,
-  empSel: null,
-  diaSel: null,
-  slotSel: null,
-  nombre: '',
-  celular: '',
-  loading: false,
-  error: null,
-  citaId: null,
-};
-
-// Get negocio slug from URL
-function getSlug() {
-  const path = window.location.pathname;
-  const parts = path.split('/').filter(Boolean);
-  return parts[0] || null;
+async function init(){
+  const s=getSlug();
+  if(!s){showErr('Negocio no encontrado');return;}
+  let {data,error:e}=await sb.from('negocios').select('*').or(`slug.eq.${s},id.eq.${s}`).eq('activo',true).single();
+  if(e||!data){showErr('Negocio no encontrado');return;}
+  neg=data;
+  document.title=neg.nombre+' — FilaCero';
+  document.getElementById('h-nombre').textContent=neg.nombre;
+  document.getElementById('h-desc').textContent=neg.descripcion||'Agenda tu cita en segundos';
+  if(neg.direccion){document.getElementById('c-dir').style.display='flex';document.getElementById('t-dir').textContent=neg.direccion;}
+  if(neg.whatsapp){document.getElementById('c-wa').style.display='flex';document.getElementById('t-wa').textContent=neg.whatsapp;}
+  new QRCode(document.getElementById('qr'),{text:location.href,width:200,height:200,colorDark:'#8A3FFC',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
+  const {data:s2}=await sb.from('servicios').select('*').eq('negocio_id',neg.id).eq('activo',true);
+  svcs=s2||[];
+  document.getElementById('svc-grid').innerHTML=svcs.map((s,i)=>`
+    <div class="svc-card">
+      <span class="svc-emoji">${EMOJIS[i%EMOJIS.length]}</span>
+      <div class="svc-name">${s.nombre}</div>
+      <div class="svc-price">$${Number(s.precio||0).toLocaleString('es-CO')}</div>
+      <div class="svc-star">★ FilaCero</div>
+    </div>`).join('');
+  const {data:e2}=await sb.from('empleados').select('*').eq('negocio_id',neg.id).eq('activo',true);
+  emps=e2||[];
+  document.getElementById('loading').style.opacity='0';
+  setTimeout(()=>{document.getElementById('loading').style.display='none';},500);
+  document.getElementById('main').style.display='block';
 }
 
-async function init() {
-  const slug = getSlug();
-  if (!slug) { showNotFound(); return; }
-  
-  render('<div class="loading"><div class="spinner"></div></div>');
-  
-  // Load negocio by slug or id
-  let { data: neg, error } = await sb.from('negocios')
-    .select('*')
-    .or(`slug.eq.${slug},id.eq.${slug}`)
-    .eq('activo', true)
-    .single();
-    
-  if (error || !neg) { showNotFound(); return; }
-  state.negocio = neg;
-  
-  // Load servicios
-  const { data: svcs } = await sb.from('servicios')
-    .select('*').eq('negocio_id', neg.id).eq('activo', true).order('nombre');
-  state.servicios = svcs || [];
-  
-  // Load empleados
-  const { data: emps } = await sb.from('empleados')
-    .select('*').eq('negocio_id', neg.id).eq('activo', true);
-  state.empleados = emps || [];
-  
-  renderApp();
+function showErr(msg){
+  document.getElementById('loading').innerHTML=`<div style="text-align:center;padding:32px"><div style="font-size:48px;margin-bottom:16px">😕</div><div style="font-family:Montserrat,sans-serif;font-size:20px;font-weight:900;color:#fff;margin-bottom:8px">${msg}</div><div style="color:rgba(255,255,255,0.5);font-size:14px">Verifica el link o escanea el QR</div></div>`;
 }
 
-function showNotFound() {
-  document.getElementById('app').innerHTML = `
-    <div class="not-found">
-      <div style="font-size:60px;margin-bottom:20px">🔍</div>
-      <div style="font-size:22px;font-weight:900;color:#1C1E21;margin-bottom:8px">Negocio no encontrado</div>
-      <div style="font-size:14px;color:#6B7280">Verifica el link o escanea el QR nuevamente</div>
+function openBooking(){step=1;svcSel=null;empSel=null;diaSel=null;slotSel=null;err='';document.getElementById('overlay').classList.add('open');render();}
+function closeBooking(){document.getElementById('overlay').classList.remove('open');}
+function setDots(c,t){document.getElementById('dots').innerHTML=Array.from({length:t},(_,i)=>`<div class="dot ${i<c?'on':''}"></div>`).join('');}
+
+function render(){
+  if(step===1)r1();else if(step===2)r2();else if(step===3)r3();else if(step===4)r4();else if(step===5)r5();
+}
+
+function r1(){
+  document.getElementById('p-title').textContent='✂️ Elige tu servicio';setDots(1,4);
+  document.getElementById('p-content').innerHTML=`
+    ${err?`<div class="err">${err}</div>`:''}
+    <div class="svc-list">
+      ${svcs.map(s=>`<div class="si ${svcSel?.id===s.id?'on':''}" onclick="selSvc('${s.id}')">
+        <div><div class="si-name">${s.nombre}</div><div class="si-info">⏱ ${s.duracion_min} min</div></div>
+        <div class="si-price">$${Number(s.precio||0).toLocaleString('es-CO')}</div>
+      </div>`).join('')}
+    </div>
+    ${svcSel?`<button class="bp" onclick="step=2;render()">Continuar →</button>`:''}`;
+}
+
+function selSvc(id){svcSel=svcs.find(s=>s.id===id);err='';render();}
+
+function r2(){
+  document.getElementById('p-title').textContent='📅 Día y especialista';setDots(2,4);
+  const dias=[];for(let i=0;i<14;i++){const d=new Date();d.setDate(d.getDate()+i);dias.push(d);}
+  const empsH=emps.length>1?`
+    <label class="fl" style="margin-bottom:7px">👤 ¿Con quién?</label>
+    <div class="emp-row">
+      <button class="eb ${empSel===null?'on':''}" onclick="empSel=null;render()">
+        <div class="ea">🎲</div><div class="en">Cualquiera</div>
+      </button>
+      ${emps.map(e=>`<button class="eb ${empSel===e.id?'on':''}" onclick="empSel='${e.id}';render()">
+        <div class="ea">${(e.nombre||'?')[0]}</div><div class="en">${e.nombre.split(' ')[0]}</div>
+      </button>`).join('')}
+    </div>`:'';
+  document.getElementById('p-content').innerHTML=`
+    ${err?`<div class="err">${err}</div>`:''}
+    <label class="fl" style="margin-bottom:7px">📅 ¿Qué día?</label>
+    <div class="dias">
+      ${dias.map(d=>{const k=d.toLocaleDateString('en-CA',{timeZone:'America/Bogota'});
+        return `<button class="db ${diaSel===k?'on':''}" onclick="diaSel='${k}';render()">
+          <div class="dn">${d.getDate()}</div><div class="dd">${DIAS[d.getDay()]}</div>
+        </button>`;}).join('')}
+    </div>
+    ${empsH}
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="bb" style="flex:1" onclick="step=1;render()">← Volver</button>
+      ${diaSel?`<button class="bp" style="flex:2" onclick="loadSlots()">Ver horarios →</button>`:''}
     </div>`;
 }
 
-function render(html) {
-  document.getElementById('app').innerHTML = html;
+async function loadSlots(){
+  document.getElementById('p-content').innerHTML='<div style="text-align:center;padding:28px"><div class="spinner" style="margin:0 auto"></div></div>';
+  try{const {data}=await sb.rpc('obtener_slots_disponibles',{p_negocio_id:neg.id,p_fecha:diaSel,p_duracion_min:svcSel.duracion_min,p_empleado_id:empSel||null});slots=data||[];}catch(e){slots=[];}
+  step=3;render();
 }
 
-function renderApp() {
-  const neg = state.negocio;
-  const stars = neg.promedio_estrellas > 0 ? `⭐ ${Number(neg.promedio_estrellas).toFixed(1)} · ${neg.total_resenas||0} reseñas` : '';
-  
-  let content = '';
-  
-  if (state.step === 5) {
-    renderExito(); return;
-  }
-  
-  const steps = ['Servicio','Fecha y hora','Tus datos'];
-  const stepIdx = state.step <= 2 ? 0 : state.step === 3 ? 1 : 2;
-  
-  const stepHtml = `<div class="step-indicator">
-    ${steps.map((s,i) => `<div class="step-dot ${i===stepIdx?'active':''}"></div>`).join('')}
-    <span style="font-size:12px;color:#6B7280;margin-left:4px">${steps[stepIdx]}</span>
-  </div>`;
-
-  if (state.step === 1) content = renderServicios();
-  else if (state.step === 2) content = renderEmpleadoYDia();
-  else if (state.step === 3) content = renderHoras();
-  else if (state.step === 4) content = renderDatos();
-  
-  render(`
-    <div class="header">
-      <div class="header-logo">💜 FilaCero</div>
-      <div class="header-sub">Agenda sin filas · Sin llamadas</div>
-    </div>
-    <div class="negocio-card">
-      <div class="negocio-nombre">${neg.nombre}</div>
-      <div class="negocio-cat">${neg.categoria||'Negocio'}</div>
-      ${neg.direccion ? `<div class="negocio-dir">📍 ${neg.direccion}</div>` : ''}
-      ${stars ? `<div class="negocio-stars">${stars}</div>` : ''}
-    </div>
-    <div class="section">
-      ${stepHtml}
-      ${state.error ? `<div class="error-msg">⚠️ ${state.error}</div>` : ''}
-      ${content}
-    </div>
-  `);
+function r3(){
+  document.getElementById('p-title').textContent='🕐 Elige tu hora';setDots(3,4);
+  document.getElementById('p-content').innerHTML=`
+    ${err?`<div class="err">${err}</div>`:''}
+    ${slots.length===0?'<div style="text-align:center;padding:22px;color:#999">No hay horarios disponibles</div>':
+      `<div class="sg">${slots.map(s=>{const o=s.disponible===false;
+        return `<button class="sb ${o?'ocu':slotSel===s.hora?'on':''}" onclick="${o?'':'slotSel=''+s.hora+'';render()'}">${s.hora}</button>`;}).join('')}</div>`}
+    <div style="display:flex;gap:8px">
+      <button class="bb" style="flex:1" onclick="step=2;render()">← Volver</button>
+      ${slotSel?`<button class="bp" style="flex:2" onclick="step=4;render()">Confirmar hora →</button>`:''}
+    </div>`;
 }
 
-function renderServicios() {
-  return `
-    <div class="card">
-      <div class="section-title">✂️ ¿Qué servicio necesitas?</div>
-      ${state.servicios.map(s => `
-        <div class="servicio-item ${state.svcSel?.id===s.id?'seleccionado':''}" onclick="selSvc('${s.id}')">
-          <div>
-            <div class="servicio-nombre">${s.nombre}</div>
-            <div class="servicio-info">⏱ ${s.duracion_min} min</div>
-          </div>
-          <div class="servicio-precio">${Number(s.precio||0).toLocaleString('es-CO')}</div>
-        </div>
-      `).join('')}
+function r4(){
+  document.getElementById('p-title').textContent='👤 Tus datos';setDots(4,4);
+  document.getElementById('p-content').innerHTML=`
+    ${err?`<div class="err">${err}</div>`:''}
+    <div style="background:var(--gray);border-radius:13px;padding:13px;margin-bottom:14px">
+      <div style="font-size:12px;color:#999">Tu cita</div>
+      <div style="font-family:Montserrat,sans-serif;font-size:14px;font-weight:800;color:#000;margin-top:3px">${svcSel?.nombre}</div>
+      <div style="font-size:12px;color:var(--purple);font-weight:600;margin-top:2px">${diaSel} · ${slotSel}</div>
     </div>
-    ${state.svcSel ? `<button class="btn-primary" onclick="goStep(2)">Continuar →</button>` : ''}
-  `;
-}
-
-function selSvc(id) {
-  state.svcSel = state.servicios.find(s=>s.id===id);
-  state.empSel = null; state.diaSel = null; state.slotSel = null;
-  state.error = null;
-  renderApp();
-}
-
-function renderEmpleadoYDia() {
-  // Generate next 14 days
-  const dias = [];
-  for(let i=0;i<14;i++){
-    const d = new Date(); d.setDate(d.getDate()+i);
-    dias.push(d);
-  }
-  
-  const empsHtml = state.empleados.length > 1 ? `
-    <div class="section-title" style="margin-top:16px">👤 ¿Con quién?</div>
-    <div class="emp-list">
-      <div class="emp-item" onclick="selEmp(null)">
-        <div class="emp-avatar ${state.empSel===null?'sel':''}">🎲</div>
-        <div class="emp-nombre ${state.empSel===null?'sel':''}">Cualquiera</div>
-      </div>
-      ${state.empleados.map(e=>`
-        <div class="emp-item" onclick="selEmp('${e.id}')">
-          <div class="emp-avatar ${state.empSel===e.id?'sel':''}">
-            ${(e.nombre||'?')[0].toUpperCase()}
-          </div>
-          <div class="emp-nombre ${state.empSel===e.id?'sel':''}">
-            ${e.nombre.split(' ')[0]}
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  ` : '';
-  
-  return `
-    <div class="card">
-      <div class="section-title">📅 ¿Qué día?</div>
-      <div class="dias-list">
-        ${dias.map(d=>{
-          const key = d.toLocaleDateString('en-CA',{timeZone:'America/Bogota'});
-          const sel = state.diaSel===key;
-          return `<div class="dia-item ${sel?'sel':''}" onclick="selDia('${key}')">
-            <div class="dia-num">${d.getDate()}</div>
-            <div class="dia-nom">${DIAS[d.getDay()]}</div>
-          </div>`;
-        }).join('')}
-      </div>
-      ${empsHtml}
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn-secondary" onclick="goStep(1)" style="flex:1">← Volver</button>
-      ${state.diaSel ? `<button class="btn-primary" style="flex:2" onclick="goStep(3)">Ver horarios →</button>` : ''}
-    </div>
-  `;
-}
-
-function selEmp(id) {
-  state.empSel = id;
-  state.slotSel = null;
-  renderApp();
-}
-
-async function selDia(key) {
-  state.diaSel = key;
-  state.slotSel = null;
-  state.error = null;
-  renderApp();
-}
-
-async function renderHoras() {
-  if(state.loading) return '<div class="loading"><div class="spinner"></div></div>';
-  
-  // Load slots
-  state.loading = true;
-  renderApp();
-  
-  try {
-    const { data, error } = await sb.rpc('obtener_slots_disponibles', {
-      p_negocio_id: state.negocio.id,
-      p_fecha: state.diaSel,
-      p_duracion_min: state.svcSel.duracion_min,
-      p_empleado_id: state.empSel || null
-    });
-    state.slots = data || [];
-  } catch(e) {
-    state.slots = [];
-  }
-  state.loading = false;
-  
-  const html = `
-    <div class="card">
-      <div class="section-title">🕐 ¿A qué hora?</div>
-      ${state.slots.length === 0 ? 
-        '<div style="text-align:center;padding:20px;color:#6B7280">No hay horarios disponibles para este día</div>' :
-        `<div class="slots-grid">
-          ${state.slots.map(s=>{
-            const ocupado = s.disponible === false;
-            const sel = state.slotSel === s.hora;
-            return `<div class="slot-item ${ocupado?'ocupado':sel?'sel':''}"
-              onclick="${ocupado?'':'selSlot(''+s.hora+'')'}">
-              ${s.hora}
-            </div>`;
-          }).join('')}
-        </div>`
-      }
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn-secondary" onclick="goStep(2)" style="flex:1">← Volver</button>
-      ${state.slotSel ? `<button class="btn-primary" style="flex:2" onclick="goStep(4)">Confirmar hora →</button>` : ''}
-    </div>
-  `;
-  
-  render(`
-    <div class="header">
-      <div class="header-logo">💜 FilaCero</div>
-      <div class="header-sub">Agenda sin filas · Sin llamadas</div>
-    </div>
-    <div class="negocio-card">
-      <div class="negocio-nombre">${state.negocio.nombre}</div>
-    </div>
-    <div class="section">
-      <div class="step-indicator">
-        <div class="step-dot"></div><div class="step-dot active"></div><div class="step-dot"></div>
-        <span style="font-size:12px;color:#6B7280;margin-left:4px">Fecha y hora</span>
-      </div>
-      ${state.error ? `<div class="error-msg">⚠️ ${state.error}</div>` : ''}
-      ${html}
-    </div>
-  `);
-}
-
-function selSlot(hora) {
-  state.slotSel = hora;
-  state.error = null;
-  renderApp();
-}
-
-function renderDatos() {
-  return `
-    <div class="card">
-      <div class="section-title">👤 Tus datos</div>
-      <div style="background:#F5F3FF;border-radius:12px;padding:12px;margin-bottom:16px;">
-        <div style="font-size:13px;color:#6B7280;">Tu cita</div>
-        <div style="font-size:15px;font-weight:800;color:#1C1E21;margin-top:4px;">${state.svcSel?.nombre}</div>
-        <div style="font-size:13px;color:#8B5CF6;margin-top:2px;">${state.diaSel} · ${state.slotSel}</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Tu nombre</label>
-        <input class="form-input" type="text" placeholder="Ej: Carlos Rodríguez"
-          value="${state.nombre}" oninput="state.nombre=this.value" id="inp-nombre"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Tu celular (WhatsApp)</label>
-        <input class="form-input" type="tel" placeholder="Ej: 3001234567"
-          value="${state.celular}" oninput="state.celular=this.value" id="inp-celular"/>
-      </div>
-    </div>
-    <button class="btn-primary" onclick="confirmar()" ${state.loading?'disabled':''}>
-      ${state.loading ? '⏳ Agendando...' : '✅ Confirmar cita'}
+    <label class="fl">Tu nombre</label>
+    <input class="fi" id="in" type="text" placeholder="Ej: Carlos Rodríguez" value="${nombre}" oninput="nombre=this.value"/>
+    <label class="fl">Celular WhatsApp</label>
+    <input class="fi" id="ic" type="tel" placeholder="Ej: 3001234567" value="${celular}" oninput="celular=this.value"/>
+    <button class="bp" onclick="confirm2()" ${loading?'disabled':''}>
+      ${loading?'⏳ Agendando...':'✅ Confirmar cita'}
     </button>
-    <button class="btn-secondary" onclick="goStep(3)">← Volver</button>
-  `;
+    <button class="bb" onclick="step=3;render()">← Volver</button>`;
 }
 
-async function confirmar() {
-  state.nombre = document.getElementById('inp-nombre')?.value || state.nombre;
-  state.celular = document.getElementById('inp-celular')?.value || state.celular;
-  
-  if(!state.nombre.trim()) { state.error='Por favor ingresa tu nombre'; renderApp(); return; }
-  if(!state.celular.trim() || state.celular.length < 10) { state.error='Por favor ingresa tu celular'; renderApp(); return; }
-  
-  state.loading = true; state.error = null;
-  renderApp();
-  
-  try {
-    // Find or create cliente
-    let { data: cli } = await sb.from('clientes')
-      .select('id').eq('celular', state.celular).single();
-    
-    let clienteId = cli?.id;
-    if(!clienteId) {
-      const { data: newCli, error: errCli } = await sb.from('clientes').insert({
-        nombre: state.nombre.trim(),
-        celular: state.celular.trim(),
-        activo: true
-      }).select('id').single();
-      if(errCli) throw errCli;
-      clienteId = newCli.id;
-    }
-    
-    // Create cita
-    const { data: cita, error: errCita } = await sb.from('citas').insert({
-      negocio_id: state.negocio.id,
-      cliente_id: clienteId,
-      servicio_id: state.svcSel.id,
-      empleado_id: state.empSel || null,
-      fecha_hora: `${state.diaSel}T${state.slotSel}:00-05:00`,
-      estado: 'pendiente',
-      precio_total: state.svcSel.precio || 0,
-      notas: `Agendado desde web por ${state.nombre}`
-    }).select('id').single();
-    
-    if(errCita) {
-      if((errCita.message||'').includes('unique') || (errCita.message||'').includes('duplicate')) {
-        state.error = 'Esa hora ya fue tomada. Por favor elige otra.';
-        state.step = 3; state.slotSel = null;
-      } else {
-        state.error = errCita.message;
-      }
-      state.loading = false; renderApp(); return;
-    }
-    
-    state.citaId = cita.id;
-    state.loading = false;
-    state.step = 5;
-    renderExito();
-    
-  } catch(e) {
-    state.error = e.message || 'Error al agendar. Intenta de nuevo.';
-    state.loading = false;
-    renderApp();
-  }
+async function confirm2(){
+  nombre=document.getElementById('in')?.value||nombre;
+  celular=document.getElementById('ic')?.value||celular;
+  if(!nombre.trim()){err='Por favor ingresa tu nombre';render();return;}
+  if(!celular.trim()||celular.length<10){err='Por favor ingresa tu celular';render();return;}
+  loading=true;err='';render();
+  try{
+    let {data:cli}=await sb.from('clientes').select('id').eq('celular',celular).single();
+    let cId=cli?.id;
+    if(!cId){const {data:nc,error:ne}=await sb.from('clientes').insert({nombre:nombre.trim(),celular:celular.trim(),activo:true}).select('id').single();if(ne)throw ne;cId=nc.id;}
+    const {data:sn}=await sb.rpc('obtener_slots_disponibles',{p_negocio_id:neg.id,p_fecha:diaSel,p_duracion_min:svcSel.duracion_min,p_empleado_id:empSel||null});
+    const libre=(sn||[]).find(s=>s.hora===slotSel&&s.disponible!==false);
+    if(!libre){err='⚠️ Esa hora ya fue tomada. Elige otra.';slots=sn||[];step=3;loading=false;render();return;}
+    const {error:ce}=await sb.from('citas').insert({negocio_id:neg.id,cliente_id:cId,servicio_id:svcSel.id,empleado_id:empSel||null,fecha_hora:`${diaSel}T${slotSel}:00-05:00`,estado:'pendiente',precio_total:svcSel.precio||0,notas:`Web: ${nombre}`});
+    if(ce){if((ce.message||'').includes('unique')||(ce.message||'').includes('duplicate')){err='⚠️ Esa hora ya fue tomada.';step=3;slotSel=null;}else{err=ce.message;}loading=false;render();return;}
+    loading=false;step=5;render();
+  }catch(e){err=e.message||'Error al agendar';loading=false;render();}
 }
 
-function renderExito() {
-  const neg = state.negocio;
-  const waMsg = encodeURIComponent(
-    `Hola! Acabo de agendar una cita en ${neg.nombre} para el ${state.diaSel} a las ${state.slotSel} — ${state.svcSel?.nombre}. ¡Nos vemos! 💜`
-  );
-  const waUrl = neg.whatsapp ? `https://wa.me/57${neg.whatsapp.replace(/\D/g,'')}?text=${waMsg}` : null;
-  
-  document.getElementById('app').innerHTML = `
-    <div class="exito-screen">
-      <div class="exito-icon">🎉</div>
-      <div class="exito-titulo">¡Cita agendada!</div>
-      <div class="exito-sub">Tu cita ha sido confirmada en<br><strong>${neg.nombre}</strong></div>
-      <div class="cita-resumen">
-        <div class="cita-resumen-row">
-          <span class="cita-resumen-label">Servicio</span>
-          <span class="cita-resumen-val">${state.svcSel?.nombre}</span>
-        </div>
-        <div class="cita-resumen-row">
-          <span class="cita-resumen-label">Fecha</span>
-          <span class="cita-resumen-val">${state.diaSel}</span>
-        </div>
-        <div class="cita-resumen-row">
-          <span class="cita-resumen-label">Hora</span>
-          <span class="cita-resumen-val">${state.slotSel}</span>
-        </div>
-        <div class="cita-resumen-row">
-          <span class="cita-resumen-label">Tu nombre</span>
-          <span class="cita-resumen-val">${state.nombre}</span>
-        </div>
+function r5(){
+  const wm=encodeURIComponent(`Hola! Agendé en ${neg.nombre} para el ${diaSel} a las ${slotSel} — ${svcSel?.nombre}. 💜`);
+  const wu=neg.whatsapp?`https://wa.me/57${neg.whatsapp.replace(/\D/g,'')}?text=${wm}`:'';
+  document.getElementById('p-title').textContent='¡Listo!';
+  document.getElementById('dots').innerHTML='';
+  document.getElementById('p-content').innerHTML=`
+    <div style="text-align:center;padding:10px 0">
+      <div class="ex-icon">🎉</div>
+      <div class="ex-title">¡Cita agendada!</div>
+      <div class="ex-sub">Tu cita en <strong>${neg.nombre}</strong> está confirmada</div>
+      <div class="csum">
+        <div class="cr"><span class="cl">Servicio</span><span class="cv">${svcSel?.nombre}</span></div>
+        <div class="cr"><span class="cl">Fecha</span><span class="cv">${diaSel}</span></div>
+        <div class="cr"><span class="cl">Hora</span><span class="cv">${slotSel}</span></div>
+        <div class="cr"><span class="cl">Cliente</span><span class="cv">${nombre}</span></div>
       </div>
-      ${waUrl ? `<a href="${waUrl}" class="whatsapp-btn" target="_blank">
-        💬 Confirmar por WhatsApp
-      </a>` : ''}
-      <button class="btn-secondary" onclick="location.reload()" style="margin-top:8px">
-        Agendar otra cita
-      </button>
-      <div style="margin-top:20px;font-size:12px;color:#9CA3AF;">
-        Powered by 💜 FilaCero
-      </div>
-    </div>
-  `;
+      ${wu?`<a href="${wu}" class="bwa" target="_blank">💬 Confirmar por WhatsApp</a>`:''}
+      <button class="bb" onclick="closeBooking()" style="margin-top:8px">Cerrar</button>
+    </div>`;
 }
 
-function goStep(n) {
-  state.step = n; state.error = null;
-  if(n === 3) { renderHoras(); return; }
-  renderApp();
-}
-
-// Start
 init();
 </script>
 </body>
