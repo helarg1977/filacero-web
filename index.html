@@ -215,7 +215,7 @@ async function init(){
   const s=getSlug();
   if(!s){showErr('Negocio no encontrado');return;}
   let {data,error:e}=await sb.from('negocios').select('*').or(`slug.eq.${s},id.eq.${s}`).eq('activo',true).single();
-  if(e||!data){showErr('Negocio no encontrado');return;}
+  if(e||!data){showErr('Error: '+(e?.message||'Negocio no encontrado')+' | slug='+s);return;}
   neg=data;
   document.title=neg.nombre+' — FilaCero';
   document.getElementById('h-nombre').textContent=neg.nombre;
