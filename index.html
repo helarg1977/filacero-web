@@ -212,6 +212,14 @@
   <button class="btn-cta" onclick="openBooking()">📅 Agendar — Es gratis</button>
 </section>
 
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="cerrarFoto()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:2000;align-items:center;justify-content:center;cursor:zoom-out">
+  <div style="position:relative;max-width:95vw;max-height:95vh">
+    <img id="lightbox-img" src="" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:12px"/>
+    <button onclick="event.stopPropagation();cerrarFoto()" style="position:absolute;top:-14px;right:-14px;background:#fff;border:none;border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.4)">✕</button>
+  </div>
+</div>
+
 <footer>
   <div class="foot-logo">Fila<span>Cero</span></div>
   <div class="foot-tag">Sin filas · Sin estrés · Más clientes felices</div>
