@@ -238,6 +238,13 @@ let nombre='',celular='',loading=false,err='';
 
 function getSlug(){return location.pathname.split('/').filter(Boolean)[0]||null;}
 
+function checkFotosEmpty(){
+  const grid=document.getElementById('fotos-grid');
+  if(!grid) return;
+  const visible=[...grid.children].filter(c=>c.style.display!=='none');
+  if(visible.length===0) document.getElementById('fotos').style.display='none';
+}
+
 async function init(){
   const s=getSlug();
   if(!s){showErr('Negocio no encontrado');return;}
@@ -284,13 +291,18 @@ async function init(){
   if(fotosResult.data && fotosResult.data.length > 0){
     document.getElementById('fotos').style.display = 'block';
     let fotosHtml = '';
+    let fotosValidas = 0;
     for(let i=0; i<fotosResult.data.length; i++){
       const furl = fotosResult.data[i].url || '';
-      fotosHtml += '<div style="border-radius:14px;overflow:hidden;aspect-ratio:1">' +
-        '<img src="' + furl + '" style="width:100%;height:100%;object-fit:cover"/>' +
+      if(!furl) continue;
+      fotosValidas++;
+      fotosHtml += '<div id="fw'+i+'" style="border-radius:14px;overflow:hidden;aspect-ratio:1">' +
+        '<img src="' + furl + '" style="width:100%;height:100%;object-fit:cover"' +
+        ' onerror="this.parentElement.style.display='none';checkFotosEmpty()"/>' +
         '</div>';
     }
     document.getElementById('fotos-grid').innerHTML = fotosHtml;
+    if(fotosValidas===0) document.getElementById('fotos').style.display='none';
   }
 
   // Fotos de resultados virales
