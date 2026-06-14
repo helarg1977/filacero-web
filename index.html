@@ -353,9 +353,17 @@ async function confirm2(){
   if(!celular.trim()||celular.length<10){err='Por favor ingresa tu celular';render();return;}
   loading=true;err='';render();
   try{
-    let {data:cli}=await sb.from('clientes').select('id').eq('whatsapp',celular).single();
+    // Buscar cliente existente (maybeSingle evita error 406)
+    let {data:cli}=await sb.from('clientes').select('id').eq('whatsapp',celular.trim()).maybeSingle();
     let cId=cli?.id;
-    if(!cId){const {data:nc,error:ne}=await sb.from('clientes').insert({nombre:nombre.trim(),whatsapp:celular.trim()}).select('id').single();if(ne)throw ne;cId=nc.id;}
+    if(!cId){
+      // Crear cliente nuevo con upsert
+      const {data:nc,error:ne}=await sb.from('clientes')
+        .upsert({nombre:nombre.trim(),whatsapp:celular.trim()},{onConflict:'whatsapp'})
+        .select('id').single();
+      if(ne)throw new Error('Error al crear cliente: '+ne.message);
+      cId=nc.id;
+    }
     const {data:sn}=await sb.rpc('obtener_slots_disponibles',{p_negocio_id:neg.id,p_fecha:diaSel,p_duracion_min:svcSel.duracion_min,p_empleado_id:empSel||null});
     const libre=(sn||[]).find(s=>s.hora===slotSel&&s.disponible!==false);
     if(!libre){err='⚠️ Esa hora ya fue tomada. Elige otra.';slots=sn||[];step=3;loading=false;render();return;}
