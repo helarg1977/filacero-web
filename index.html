@@ -353,13 +353,15 @@ async function confirm2(){
   if(!celular.trim()||celular.length<10){err='Por favor ingresa tu celular';render();return;}
   loading=true;err='';render();
   try{
-    // Buscar cliente existente (maybeSingle evita error 406)
-    let {data:cli}=await sb.from('clientes').select('id').eq('whatsapp',celular.trim()).maybeSingle();
-    let cId=cli?.id;
-    if(!cId){
-      // Crear cliente nuevo con upsert
+    // Buscar cliente existente
+    let cId=null;
+    const {data:clientes}=await sb.from('clientes').select('id').eq('whatsapp',celular.trim()).limit(1);
+    if(clientes&&clientes.length>0){
+      cId=clientes[0].id;
+    } else {
+      // Crear cliente nuevo con INSERT simple
       const {data:nc,error:ne}=await sb.from('clientes')
-        .upsert({nombre:nombre.trim(),whatsapp:celular.trim()},{onConflict:'whatsapp'})
+        .insert({nombre:nombre.trim(),whatsapp:celular.trim()})
         .select('id').single();
       if(ne)throw new Error('Error al crear cliente: '+ne.message);
       cId=nc.id;
