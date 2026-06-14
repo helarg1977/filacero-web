@@ -291,18 +291,25 @@ async function init(){
   if(fotosResult.data && fotosResult.data.length > 0){
     document.getElementById('fotos').style.display = 'block';
     let fotosHtml = '';
-    let fotosValidas = 0;
     for(let i=0; i<fotosResult.data.length; i++){
       const furl = fotosResult.data[i].url || '';
       if(!furl) continue;
-      fotosValidas++;
-      fotosHtml += '<div id="fw'+i+'" style="border-radius:14px;overflow:hidden;aspect-ratio:1">' +
-        '<img src="' + furl + '" style="width:100%;height:100%;object-fit:cover"' +
-        ' onerror="this.parentElement.style.display='none';checkFotosEmpty()"/>' +
+      fotosHtml += '<div class="foto-item" style="border-radius:14px;overflow:hidden;aspect-ratio:1">' +
+        '<img src="' + furl + '" style="width:100%;height:100%;object-fit:cover"/>' +
         '</div>';
     }
     document.getElementById('fotos-grid').innerHTML = fotosHtml;
-    if(fotosValidas===0) document.getElementById('fotos').style.display='none';
+    // Hide broken images after load
+    setTimeout(function(){
+      var imgs = document.querySelectorAll('#fotos-grid img');
+      var ok = 0;
+      imgs.forEach(function(img){
+        if(!img.complete || img.naturalWidth===0){
+          img.parentElement.style.display='none';
+        } else { ok++; }
+      });
+      if(ok===0) document.getElementById('fotos').style.display='none';
+    }, 2000);
   }
 
   // Fotos de resultados virales
