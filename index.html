@@ -214,8 +214,18 @@ function getSlug(){return location.pathname.split('/').filter(Boolean)[0]||null;
 async function init(){
   const s=getSlug();
   if(!s){showErr('Negocio no encontrado');return;}
-  let {data,error:e}=await sb.from('negocios').select('*').or(`slug.eq.${s},id.eq.${s}`).eq('activo',true).single();
-  if(e||!data){showErr('Error: '+(e?.message||'Negocio no encontrado')+' | slug='+s);return;}
+  // Buscar por slug primero, luego por ID si es UUID
+  let data=null, e=null;
+  const isUUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+  if(isUUID){
+    const r1=await sb.from('negocios').select('*').eq('id',s).eq('activo',true).single();
+    data=r1.data; e=r1.error;
+  }
+  if(!data){
+    const r2=await sb.from('negocios').select('*').eq('slug',s).eq('activo',true).single();
+    data=r2.data; e=r2.error;
+  }
+  if(!data){showErr('Negocio no encontrado');return;}
   neg=data;
   document.title=neg.nombre+' — FilaCero';
   document.getElementById('h-nombre').textContent=neg.nombre;
