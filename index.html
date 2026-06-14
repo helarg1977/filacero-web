@@ -279,18 +279,21 @@ async function init(){
   emps=e2||[];
 
   // Cargar fotos del negocio
-  const {data:fotos}=await sb.from('fotos_negocio').select('url,descripcion').eq('negocio_id',neg.id).limit(12);
-  if(fotos&&fotos.length>0){
-    document.getElementById('fotos').style.display='block';
-    document.getElementById('fotos-grid').innerHTML=fotos.map(f=>`
-      <div style="border-radius:14px;overflow:hidden;aspect-ratio:1;cursor:pointer"
-        onclick="window.open('${f.url}','_blank')">
-        <img src="${f.url}" alt="${f.descripcion||'Trabajo'}"
-          style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s"
-          onmouseover="this.style.transform='scale(1.05)'"
-          onmouseout="this.style.transform='scale(1)'"/>
-      </div>`).join('');
-  }
+  try {
+    const {data:fotos,error:fe}=await sb.from('fotos_negocio')
+      .select('url,caption').eq('negocio_id',neg.id).eq('activa',true).order('orden').limit(12);
+    console.log('fotos:', fotos, 'error:', fe);
+    if(fotos&&fotos.length>0){
+      document.getElementById('fotos').style.display='block';
+      document.getElementById('fotos-grid').innerHTML=fotos.map(f=>{
+        const url=f.url||'';
+        const alt=f.caption||'Trabajo';
+        return '<div style="border-radius:14px;overflow:hidden;aspect-ratio:1;cursor:pointer" onclick="window.open(''+url+'','_blank')">'+
+          '<img src="'+url+'" alt="'+alt+'" style="width:100%;height:100%;object-fit:cover"/>'+
+          '</div>';
+      }).join('');
+    }
+  } catch(fe){ console.log('fotos error', fe); }
 
   // Fotos de resultados virales
   const {data:resultados}=await sb.from('fotos_resultado').select('foto_url,negocio_nombre').eq('negocio_id',neg.id).limit(6);
