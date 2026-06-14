@@ -159,6 +159,10 @@
         <div class="c-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg></div>
         <span class="c-txt">Agenda disponible 24/7</span>
       </div>
+      <div id="c-maps" style="display:none" class="c-row">
+        <div class="c-icon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+        <a id="c-maps-link" href="#" target="_blank" class="c-txt" style="color:var(--purple);font-weight:700;text-decoration:none">📍 Cómo llegar →</a>
+      </div>
     </div>
   </div>
 </section>
@@ -177,6 +181,29 @@
 <section id="servicios">
   <h2 class="sec-title">★ Nuestros <span>Servicios</span> ★</h2>
   <div class="svc-grid" id="svc-grid"></div>
+</section>
+
+<!-- FOTOS -->
+<section id="fotos" style="display:none;padding:80px 24px;background:var(--gray)">
+  <h2 class="sec-title">📸 Trabajos <span>recientes</span></h2>
+  <div id="fotos-grid" style="max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;"></div>
+</section>
+
+<!-- MAPA -->
+<section id="mapa-sec" style="display:none;padding:80px 24px;background:#fff">
+  <h2 class="sec-title">📍 ¿Cómo <span>llegar</span>?</h2>
+  <div style="max-width:700px;margin:0 auto;text-align:center">
+    <div style="background:var(--gray);border-radius:var(--r);padding:28px;margin-bottom:20px">
+      <div style="font-size:48px;margin-bottom:12px">📍</div>
+      <div id="dir-txt" style="font-family:Montserrat,sans-serif;font-size:16px;font-weight:700;color:#222;margin-bottom:20px"></div>
+      <a id="maps-btn" href="#" target="_blank"
+        style="display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:#fff;
+        font-family:Montserrat,sans-serif;font-size:15px;font-weight:800;padding:14px 32px;
+        border-radius:50px;text-decoration:none;box-shadow:0 4px 20px rgba(138,63,252,0.3)">
+        🗺️ Abrir en Google Maps
+      </a>
+    </div>
+  </div>
 </section>
 
 <section id="cta">
@@ -230,7 +257,13 @@ async function init(){
   document.title=neg.nombre+' — FilaCero';
   document.getElementById('h-nombre').textContent=neg.nombre;
   document.getElementById('h-desc').textContent=neg.descripcion||'Agenda tu cita en segundos';
-  if(neg.direccion){document.getElementById('c-dir').style.display='flex';document.getElementById('t-dir').textContent=neg.direccion;}
+  if(neg.direccion){
+    document.getElementById('c-dir').style.display='flex';
+    document.getElementById('t-dir').textContent=neg.direccion;
+    document.getElementById('c-maps').style.display='flex';
+    const mu='https://www.google.com/maps/search/'+encodeURIComponent(neg.direccion+', Bogotá, Colombia');
+    document.getElementById('c-maps-link').href=mu;
+  }
   if(neg.whatsapp){document.getElementById('c-wa').style.display='flex';document.getElementById('t-wa').textContent=neg.whatsapp;}
   new QRCode(document.getElementById('qr'),{text:location.href,width:200,height:200,colorDark:'#8A3FFC',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
   const {data:s2}=await sb.from('servicios').select('*').eq('negocio_id',neg.id).eq('activo',true);
@@ -244,6 +277,39 @@ async function init(){
     </div>`).join('');
   const {data:e2}=await sb.from('empleados').select('*').eq('negocio_id',neg.id).eq('activo',true);
   emps=e2||[];
+
+  // Cargar fotos del negocio
+  const {data:fotos}=await sb.from('fotos_negocio').select('url,descripcion').eq('negocio_id',neg.id).limit(12);
+  if(fotos&&fotos.length>0){
+    document.getElementById('fotos').style.display='block';
+    document.getElementById('fotos-grid').innerHTML=fotos.map(f=>`
+      <div style="border-radius:14px;overflow:hidden;aspect-ratio:1;cursor:pointer"
+        onclick="window.open('${f.url}','_blank')">
+        <img src="${f.url}" alt="${f.descripcion||'Trabajo'}"
+          style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s"
+          onmouseover="this.style.transform='scale(1.05)'"
+          onmouseout="this.style.transform='scale(1)'"/>
+      </div>`).join('');
+  }
+
+  // Fotos de resultados virales
+  const {data:resultados}=await sb.from('fotos_resultado').select('foto_url,negocio_nombre').eq('negocio_id',neg.id).limit(6);
+  if(resultados&&resultados.length>0&&!fotos?.length){
+    document.getElementById('fotos').style.display='block';
+    document.getElementById('fotos-grid').innerHTML+=resultados.map(f=>`
+      <div style="border-radius:14px;overflow:hidden;aspect-ratio:1">
+        <img src="${f.foto_url}" alt="Resultado"
+          style="width:100%;height:100%;object-fit:cover"/>
+      </div>`).join('');
+  }
+
+  // Mapa / dirección
+  if(neg.direccion){
+    document.getElementById('mapa-sec').style.display='block';
+    document.getElementById('dir-txt').textContent='📍 '+neg.direccion+(neg.barrio?' · '+neg.barrio:'');
+    const mapsUrl='https://www.google.com/maps/search/'+encodeURIComponent(neg.direccion+(neg.barrio?', '+neg.barrio:'')+', Bogotá, Colombia');
+    document.getElementById('maps-btn').href=mapsUrl;
+  }
   document.getElementById('loading').style.opacity='0';
   setTimeout(()=>{document.getElementById('loading').style.display='none';},500);
   document.getElementById('main').style.display='block';
