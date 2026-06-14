@@ -355,7 +355,7 @@ async function confirm2(){
   try{
     let {data:cli}=await sb.from('clientes').select('id').eq('celular',celular).single();
     let cId=cli?.id;
-    if(!cId){const {data:nc,error:ne}=await sb.from('clientes').insert({nombre:nombre.trim(),celular:celular.trim(),activo:true}).select('id').single();if(ne)throw ne;cId=nc.id;}
+    if(!cId){const {data:nc,error:ne}=await sb.from('clientes').insert({nombre:nombre.trim(),celular:celular.trim()}).select('id').single();if(ne)throw ne;cId=nc.id;}
     const {data:sn}=await sb.rpc('obtener_slots_disponibles',{p_negocio_id:neg.id,p_fecha:diaSel,p_duracion_min:svcSel.duracion_min,p_empleado_id:empSel||null});
     const libre=(sn||[]).find(s=>s.hora===slotSel&&s.disponible!==false);
     if(!libre){err='⚠️ Esa hora ya fue tomada. Elige otra.';slots=sn||[];step=3;loading=false;render();return;}
