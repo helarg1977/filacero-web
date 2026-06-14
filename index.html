@@ -307,7 +307,10 @@ function r3(){
     ${err?`<div class="err">${err}</div>`:''}
     ${slots.length===0?'<div style="text-align:center;padding:22px;color:#999">No hay horarios disponibles</div>':
       `<div class="sg">${slots.map(s=>{const o=s.disponible===false;
-        return `<button class="sb ${o?'ocu':slotSel===s.hora?'on':''}" onclick="${o?'':'slotSel=''+s.hora+'';render()'}">${s.hora}</button>`;}).join('')}</div>`}
+        const cls=o?'ocu':slotSel===s.hora?'on':'';
+        const click=o?'':'slotSel=\''+s.hora+'\';render()';
+        return '<button class="sb '+cls+'" onclick="'+click+'">'+s.hora+'</button>';
+      }).join('')}</div>`}
     <div style="display:flex;gap:8px">
       <button class="bb" style="flex:1" onclick="step=2;render()">← Volver</button>
       ${slotSel?`<button class="bp" style="flex:2" onclick="step=4;render()">Confirmar hora →</button>`:''}
