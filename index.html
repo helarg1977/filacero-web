@@ -238,6 +238,20 @@ let nombre='',celular='',loading=false,err='';
 
 function getSlug(){return location.pathname.split('/').filter(Boolean)[0]||null;}
 
+function abrirFoto(el){
+  const url = el.getAttribute('data-url');
+  document.getElementById('lightbox-img').src = url;
+  const lb = document.getElementById('lightbox');
+  lb.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function cerrarFoto(){
+  document.getElementById('lightbox').style.display = 'none';
+  document.body.style.overflow = '';
+}
+// Close with ESC
+document.addEventListener('keydown',function(e){if(e.key==='Escape')cerrarFoto();});
+
 function checkFotosEmpty(){
   const grid=document.getElementById('fotos-grid');
   if(!grid) return;
@@ -294,11 +308,27 @@ async function init(){
     for(let i=0; i<fotosResult.data.length; i++){
       const furl = fotosResult.data[i].url || '';
       if(!furl) continue;
-      fotosHtml += '<div class="foto-item" style="border-radius:14px;overflow:hidden;aspect-ratio:1">' +
-        '<img src="' + furl + '" style="width:100%;height:100%;object-fit:cover"/>' +
+      fotosHtml += '<div class="foto-item" onclick="abrirFoto(this)" data-url="' + furl + '" ' +
+        'style="border-radius:14px;overflow:hidden;aspect-ratio:1;cursor:zoom-in;position:relative">' +
+        '<img src="' + furl + '" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s"/>' +
+        '<div style="position:absolute;inset:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;transition:background 0.3s" class="foto-overlay">' +
+        '<span style="color:#fff;font-size:24px;opacity:0;transition:opacity 0.3s">🔍</span></div>' +
         '</div>';
     }
     document.getElementById('fotos-grid').innerHTML = fotosHtml;
+    // Hover effect
+    document.querySelectorAll('.foto-item').forEach(function(el){
+      el.addEventListener('mouseenter',function(){
+        this.querySelector('img').style.transform='scale(1.05)';
+        this.querySelector('.foto-overlay').style.background='rgba(0,0,0,0.3)';
+        this.querySelector('span').style.opacity='1';
+      });
+      el.addEventListener('mouseleave',function(){
+        this.querySelector('img').style.transform='scale(1)';
+        this.querySelector('.foto-overlay').style.background='rgba(0,0,0,0)';
+        this.querySelector('span').style.opacity='0';
+      });
+    });
     // Hide broken images after load
     setTimeout(function(){
       var imgs = document.querySelectorAll('#fotos-grid img');
