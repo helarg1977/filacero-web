@@ -2,13 +2,20 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>IVONN STILOS — FilaCero</title>
+<title>FilaCero — Flyer Premium</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{background:#111;display:flex;flex-direction:column;align-items:center;padding:20px;font-family:'Montserrat',sans-serif;}
-.print-btn{background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:14px 32px;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:24px;font-family:'Montserrat',sans-serif;letter-spacing:1px;}
-.print-btn:hover{background:#6d28d9;}
+.btn-row{display:flex;gap:12px;margin-bottom:24px;}
+.btn{border:none;border-radius:12px;padding:14px 28px;font-weight:800;font-size:14px;cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:0.5px;}
+.btn-print{background:#7c3aed;color:#fff;}
+.btn-print:hover{background:#6d28d9;}
+.btn-download{background:#059669;color:#fff;}
+.btn-download:hover{background:#047857;}
+.btn-download:disabled{background:#374151;cursor:wait;}
 .flyer{width:1080px;background:#090909;font-family:'Montserrat',sans-serif;display:flex;flex-direction:column;position:relative;overflow:hidden;border:2px solid rgba(124,58,237,0.35);}
 .hero{height:540px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#090909;}
 .deco-l{position:absolute;left:0;top:0;bottom:0;width:38%;background:linear-gradient(to right,rgba(9,2,18,0.95) 0%,rgba(9,2,18,0.55) 55%,rgba(9,2,18,0) 100%),repeating-linear-gradient(-55deg,rgba(100,40,200,0.04) 0px,rgba(100,40,200,0.04) 1px,transparent 1px,transparent 18px);z-index:0;}
@@ -17,72 +24,74 @@ body{background:#111;display:flex;flex-direction:column;align-items:center;paddi
 .glow-l{left:6%;top:5%;width:260px;height:360px;background:radial-gradient(ellipse,rgba(90,30,190,0.28) 0%,transparent 68%);}
 .glow-r{right:6%;top:5%;width:260px;height:360px;background:radial-gradient(ellipse,rgba(150,70,230,0.22) 0%,transparent 68%);}
 .glow-ct{left:50%;top:50%;transform:translate(-50%,-50%);width:560px;height:380px;background:radial-gradient(ellipse,rgba(70,15,150,0.18) 0%,transparent 70%);}
-.hero-center{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;width:700px;gap:0;}
-.fc-logo-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;}
-.fc-logo-word{font-size:28px;font-weight:800;color:#fff;letter-spacing:0.5px;}
+.hero-center{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;width:700px;}
+.fc-logo-word{font-size:28px;font-weight:800;color:#fff;letter-spacing:0.5px;margin-bottom:18px;}
 .fc-logo-word em{color:#a855f7;font-style:normal;}
 .crown{font-size:36px;line-height:1;color:#c084fc;margin-bottom:10px;filter:drop-shadow(0 0 10px rgba(168,85,247,0.7));letter-spacing:6px;}
-.biz-name{font-size:108px;font-weight:900;color:#ffffff;letter-spacing:5px;line-height:0.92;margin-bottom:18px;text-shadow:0 0 50px rgba(168,85,247,0.4),0 3px 0 rgba(0,0,0,0.9);}
-.category{font-size:22px;font-weight:700;color:#c084fc;letter-spacing:5px;text-transform:uppercase;margin-bottom:10px;}
-.tagline{font-size:15px;font-weight:500;color:#888;letter-spacing:4.5px;text-transform:uppercase;}
+.biz-name{font-size:96px;font-weight:900;color:#ffffff;letter-spacing:4px;line-height:0.92;margin-bottom:18px;text-shadow:0 0 50px rgba(168,85,247,0.4),0 3px 0 rgba(0,0,0,0.9);}
+.category{font-size:20px;font-weight:700;color:#c084fc;letter-spacing:4px;text-transform:uppercase;margin-bottom:10px;}
+.tagline{font-size:15px;font-weight:500;color:#888;letter-spacing:4px;text-transform:uppercase;}
 .tagline::before{content:'— ';}
 .tagline::after{content:' —';}
 .services-bar{flex-shrink:0;margin:-18px 44px 0;background:rgba(20,6,50,0.93);border:1.5px solid #4c1d95;border-radius:14px;display:flex;align-items:stretch;position:relative;z-index:20;}
-.svc-card{flex:1;display:flex;align-items:center;gap:14px;padding:22px 26px;}
+.svc-card{flex:1;display:flex;align-items:center;gap:14px;padding:20px 24px;}
 .svc-card+.svc-card{border-left:1.5px solid #4c1d95;}
-.svc-icon{font-size:32px;flex-shrink:0;filter:drop-shadow(0 0 6px rgba(168,85,247,0.55));}
-.svc-name{font-size:14px;font-weight:800;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
-.svc-detail{font-size:12px;color:#9ca3af;line-height:1.45;}
-.middle{flex:1;display:flex;align-items:center;padding:32px 44px 20px;gap:28px;min-height:0;}
-.left-badges{display:flex;flex-direction:column;gap:40px;width:148px;flex-shrink:0;}
-.badge-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;}
+.svc-icon{font-size:30px;flex-shrink:0;filter:drop-shadow(0 0 6px rgba(168,85,247,0.55));}
+.svc-name{font-size:13px;font-weight:800;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;}
+.svc-detail{font-size:11px;color:#9ca3af;line-height:1.4;}
+.middle{flex:1;display:flex;align-items:center;padding:28px 44px 16px;gap:28px;}
+.left-badges{display:flex;flex-direction:column;gap:36px;width:148px;flex-shrink:0;}
+.badge-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;}
 .badge-circle{width:68px;height:68px;border:2px solid #7c3aed;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;color:#c084fc;background:rgba(124,58,237,0.08);box-shadow:0 0 0 1px rgba(124,58,237,0.18),0 0 18px rgba(124,58,237,0.22);}
-.badge-label{font-size:13px;font-weight:800;color:#fff;letter-spacing:0.4px;text-transform:uppercase;line-height:1.35;}
+.badge-label{font-size:12px;font-weight:800;color:#fff;letter-spacing:0.3px;text-transform:uppercase;line-height:1.3;}
 .qr-wrap{flex:1;display:flex;justify-content:center;align-items:center;}
-.qr-outer{background:#ffffff;border-radius:26px;padding:24px;width:460px;height:460px;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 0 5px #7c3aed,0 0 0 10px rgba(124,58,237,0.28),0 0 70px rgba(124,58,237,0.50),0 0 130px rgba(124,58,237,0.22);}
+.qr-outer{background:#ffffff;border-radius:26px;padding:22px;width:440px;height:440px;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 0 5px #7c3aed,0 0 0 10px rgba(124,58,237,0.28),0 0 70px rgba(124,58,237,0.50),0 0 130px rgba(124,58,237,0.22);}
 #qr-canvas{display:block;border-radius:4px;}
-.qr-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:8px 10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 4px 18px rgba(0,0,0,0.22);}
-.qr-overlay-word{font-size:12.5px;font-weight:800;color:#111;}
+.qr-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:14px;padding:6px 8px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;box-shadow:0 4px 18px rgba(0,0,0,0.22);}
+.qr-overlay-word{font-size:11px;font-weight:800;color:#111;}
 .qr-overlay-word em{color:#7c3aed;font-style:normal;}
-.right-info{display:flex;flex-direction:column;gap:24px;width:158px;flex-shrink:0;text-align:right;}
-.right-slogan{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:36px;color:#fff;line-height:1.18;}
-.right-cta{font-size:23px;font-weight:800;color:#fff;line-height:1.28;text-transform:uppercase;}
+.right-info{display:flex;flex-direction:column;gap:22px;width:158px;flex-shrink:0;text-align:right;}
+.right-slogan{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:34px;color:#fff;line-height:1.18;}
+.right-cta{font-size:21px;font-weight:800;color:#fff;line-height:1.28;text-transform:uppercase;}
 .right-cta .accent{color:#c084fc;}
-.stars{font-size:27px;color:#f59e0b;letter-spacing:3px;}
-.stars-cap{font-size:11.5px;font-weight:700;color:#d1d5db;text-transform:uppercase;letter-spacing:0.5px;line-height:1.42;margin-top:5px;}
-.cta-block{flex-shrink:0;text-align:center;padding:0 44px 22px;}
-.cta-headline{font-size:36px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:3px;margin-bottom:20px;}
+.stars{font-size:25px;color:#f59e0b;letter-spacing:3px;}
+.stars-cap{font-size:11px;font-weight:700;color:#d1d5db;text-transform:uppercase;letter-spacing:0.5px;line-height:1.4;margin-top:4px;}
+.cta-block{flex-shrink:0;text-align:center;padding:0 44px 18px;}
+.cta-headline{font-size:34px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:3px;margin-bottom:18px;}
 .cta-headline .ac{color:#c084fc;}
-.url-pill{display:inline-flex;align-items:center;gap:12px;background:rgba(12,5,28,0.92);border:1.5px solid #4c1d95;border-radius:44px;padding:15px 38px;font-size:17.5px;font-weight:600;color:#e2e8f0;letter-spacing:0.2px;}
-.url-globe{font-size:20px;color:#a855f7;}
-.howto{flex-shrink:0;margin:0 44px 22px;background:rgba(8,3,22,0.92);border:1.5px solid #2d1b5e;border-radius:18px;padding:0 40px 28px;}
-.howto-pill-wrap{text-align:center;margin-bottom:22px;}
-.howto-pill{display:inline-block;background:#7c3aed;color:#fff;font-size:14px;font-weight:800;letter-spacing:3px;text-transform:uppercase;padding:9px 36px;border-radius:0 0 20px 20px;}
+.url-pill{display:inline-flex;align-items:center;gap:12px;background:rgba(12,5,28,0.92);border:1.5px solid #4c1d95;border-radius:44px;padding:13px 36px;font-size:16px;font-weight:600;color:#e2e8f0;}
+.url-globe{font-size:18px;color:#a855f7;}
+.howto{flex-shrink:0;margin:0 44px 18px;background:rgba(8,3,22,0.92);border:1.5px solid #2d1b5e;border-radius:18px;padding:0 40px 24px;}
+.howto-pill-wrap{text-align:center;margin-bottom:20px;}
+.howto-pill{display:inline-block;background:#7c3aed;color:#fff;font-size:13px;font-weight:800;letter-spacing:3px;text-transform:uppercase;padding:8px 34px;border-radius:0 0 18px 18px;}
 .steps{display:flex;align-items:center;justify-content:center;}
-.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;}
-.step-circle{width:84px;height:84px;border-radius:50%;border:2.5px solid #7c3aed;display:flex;align-items:center;justify-content:center;font-size:34px;background:rgba(18,6,46,0.85);color:#c084fc;box-shadow:0 0 22px rgba(124,58,237,0.28);}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;}
+.step-circle{width:80px;height:80px;border-radius:50%;border:2.5px solid #7c3aed;display:flex;align-items:center;justify-content:center;font-size:32px;background:rgba(18,6,46,0.85);color:#c084fc;box-shadow:0 0 22px rgba(124,58,237,0.28);}
 .step-circle.active{background:#7c3aed;color:#fff;box-shadow:0 0 34px rgba(124,58,237,0.55);}
-.step-num{font-size:15px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:1px;}
-.step-sub{font-size:13px;font-weight:400;color:#9ca3af;margin-top:-4px;}
-.step-arrow{font-size:34px;color:#7c3aed;flex-shrink:0;padding-bottom:46px;filter:drop-shadow(0 0 8px rgba(124,58,237,0.5));}
-.perks{flex-shrink:0;background:linear-gradient(90deg,#4a1f96,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:space-around;padding:22px 32px;}
+.step-num{font-size:14px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:1px;}
+.step-sub{font-size:12px;color:#9ca3af;margin-top:-4px;}
+.step-arrow{font-size:32px;color:#7c3aed;flex-shrink:0;padding-bottom:42px;filter:drop-shadow(0 0 8px rgba(124,58,237,0.5));}
+.perks{flex-shrink:0;background:linear-gradient(90deg,#4a1f96,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:space-around;padding:20px 32px;}
 .perk{display:flex;align-items:center;gap:10px;color:#fff;}
-.perk-icon{width:46px;height:46px;background:rgba(255,255,255,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;}
-.perk-txt{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;line-height:1.35;}
-.perk-sep{width:1.5px;height:40px;background:rgba(255,255,255,0.22);}
-.footer{flex-shrink:0;background:#040404;border-top:1.5px solid #1a0a38;display:flex;align-items:center;justify-content:center;gap:14px;padding:18px;}
-.footer-pw{font-size:12px;font-weight:500;color:#555;text-transform:uppercase;letter-spacing:2.5px;}
-.footer-logo{display:flex;align-items:center;gap:9px;}
-.footer-logo-name{font-size:20px;font-weight:800;color:#fff;letter-spacing:0.3px;}
+.perk-icon{width:44px;height:44px;background:rgba(255,255,255,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.perk-txt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;line-height:1.3;}
+.perk-sep{width:1.5px;height:38px;background:rgba(255,255,255,0.22);}
+.footer{flex-shrink:0;background:#040404;border-top:1.5px solid #1a0a38;display:flex;align-items:center;justify-content:center;gap:14px;padding:16px;}
+.footer-pw{font-size:11px;font-weight:500;color:#555;text-transform:uppercase;letter-spacing:2.5px;}
+.footer-logo-name{font-size:20px;font-weight:800;color:#fff;}
 .footer-logo-name em{color:#a855f7;font-style:normal;}
 .flyer::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,#7c3aed 40%,#a855f7 60%,transparent 100%);z-index:999;}
-@media print{body{background:#090909;padding:0;}.print-btn{display:none;}.flyer{margin:0 auto;}}
+@media print{body{background:#090909;padding:0;}.btn-row{display:none;}.flyer{margin:0 auto;}}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
 <body>
-<button class="print-btn" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
-<div class="flyer">
+
+<div class="btn-row">
+  <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir / PDF</button>
+  <button class="btn btn-download" id="btn-dl" onclick="descargarPNG()">📥 Descargar PNG</button>
+</div>
+
+<div class="flyer" id="flyer">
   <section class="hero">
     <div class="deco-l"></div>
     <div class="deco-r"></div>
@@ -90,25 +99,21 @@ body{background:#111;display:flex;flex-direction:column;align-items:center;paddi
     <div class="glow glow-r"></div>
     <div class="glow glow-ct"></div>
     <div class="hero-center">
-      <div class="fc-logo-row">
-        <div class="fc-logo-word">Fila<em>Cero</em></div>
-      </div>
+      <div class="fc-logo-word">Fila<em>Cero</em></div>
       <div class="crown">♛</div>
-      <div class="biz-name" id="biz-name">IVONN STILOS</div>
-      <div class="category" id="biz-cat">Barbería ✦ Uñas &amp; Spa</div>
-      <div class="tagline">Tu estilo, nuestra pasión</div>
+      <div class="biz-name" id="biz-name">CARGANDO...</div>
+      <div class="category" id="biz-cat">—</div>
+      <div class="tagline" id="biz-tagline">La mejor experiencia de tu barrio</div>
     </div>
   </section>
-  <div class="services-bar">
-    <div class="svc-card"><div class="svc-icon">✂️</div><div><div class="svc-name">Cortes</div><div class="svc-detail">Barba • Diseños</div></div></div>
-    <div class="svc-card"><div class="svc-icon">💅</div><div><div class="svc-name">Uñas</div><div class="svc-detail">Manicure • Gel • Acrílicas</div></div></div>
-    <div class="svc-card"><div class="svc-icon">🪷</div><div><div class="svc-name">Spa</div><div class="svc-detail">Relajación y cuidado</div></div></div>
+
+  <div class="services-bar" id="services-bar">
+    <!-- dinámico -->
   </div>
+
   <div class="middle">
-    <div class="left-badges">
-      <div class="badge-card"><div class="badge-circle">📵</div><div class="badge-label">Agenda<br>sin llamar</div></div>
-      <div class="badge-card"><div class="badge-circle">⚡</div><div class="badge-label">Sin filas<br>sin esperas</div></div>
-      <div class="badge-card"><div class="badge-circle">✅</div><div class="badge-label">100% seguro<br>y confiable</div></div>
+    <div class="left-badges" id="left-badges">
+      <!-- dinámico -->
     </div>
     <div class="qr-wrap">
       <div class="qr-outer">
@@ -124,10 +129,12 @@ body{background:#111;display:flex;flex-direction:column;align-items:center;paddi
       <div><div class="stars">★★★★★</div><div class="stars-cap">Miles de clientes<br>ya confían en<br>nosotros</div></div>
     </div>
   </div>
+
   <div class="cta-block">
     <div class="cta-headline">Agenda tu cita <span class="ac">sin llamar</span></div>
-    <span class="url-pill" id="url-pill"><span class="url-globe">🌐</span><span id="url-text">filacero-web.vercel.app/negocio</span></span>
+    <span class="url-pill"><span class="url-globe">🌐</span><span id="url-text">filacero.app/negocio</span></span>
   </div>
+
   <div class="howto">
     <div class="howto-pill-wrap"><span class="howto-pill">Así de fácil</span></div>
     <div class="steps">
@@ -138,6 +145,7 @@ body{background:#111;display:flex;flex-direction:column;align-items:center;paddi
       <div class="step"><div class="step-circle">📅</div><div class="step-num">3. Confirma</div><div class="step-sub">tu cita</div></div>
     </div>
   </div>
+
   <div class="perks">
     <div class="perk"><div class="perk-icon">⭐</div><div class="perk-txt">Acumula<br>puntos</div></div>
     <div class="perk-sep"></div>
@@ -147,34 +155,148 @@ body{background:#111;display:flex;flex-direction:column;align-items:center;paddi
     <div class="perk-sep"></div>
     <div class="perk"><div class="perk-icon">👑</div><div class="perk-txt">Servicios<br>premium</div></div>
   </div>
+
   <div class="footer">
     <span class="footer-pw">Powered by</span>
-    <div class="footer-logo"><span class="footer-logo-name">Fila<em>Cero</em></span></div>
+    <span class="footer-logo-name">Fila<em>Cero</em></span>
   </div>
 </div>
+
 <script>
-const SUPABASE_URL='https://djzloikdmahnqclmvhsf.supabase.co';
-const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqemxvaWtkbWFobnFjbG12aHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTYyNTUsImV4cCI6MjA5Mjg3MjI1NX0.OKiBQUqkBT_iGsW1avHqPyl8sA4blfDc3jrEWPvzJTw';
-const slug=window.location.pathname.replace('/qr/','').replace('/qr','').split('/').filter(Boolean).pop()||'ivonn-stilos-5c0a4d';
-async function cargar(){
-  const webUrl='https://filacero-web.vercel.app/'+slug;
-  document.getElementById('url-text').textContent='filacero-web.vercel.app/'+slug;
-  try{
-    const r=await fetch(SUPABASE_URL+'/rest/v1/negocios?slug=eq.'+slug+'&select=nombre,categoria&limit=1',
-      {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
-    const d=await r.json();
-    if(d&&d[0]){
-      document.getElementById('biz-name').textContent=d[0].nombre.toUpperCase();
-      if(d[0].categoria)document.getElementById('biz-cat').textContent=d[0].categoria+' ✦ Tu negocio del barrio';
-      document.title=d[0].nombre+' — FilaCero';
+// ── PLANTILLAS POR CATEGORÍA ─────────────────────────────
+const TEMPLATES = {
+  barberia: {
+    catLabel: 'BARBERÍA ✦ CORTES & DISEÑOS',
+    tagline: 'Tu look, nuestra pasión',
+    servicios: [
+      {icon:'✂️', nombre:'CORTES', detalle:'Degradado • Clásico'},
+      {icon:'🪒', nombre:'BARBA', detalle:'Diseño • Perfilado'},
+      {icon:'💈', nombre:'DISEÑOS', detalle:'Líneas • Figuras'},
+    ],
+    badges: [
+      {icon:'📵', label:'Agenda\nsin llamar'},
+      {icon:'⚡', label:'Sin filas\nsin esperas'},
+      {icon:'✅', label:'100% seguro\ny confiable'},
+    ],
+  },
+  peluqueria: {
+    catLabel: 'PELUQUERÍA ✦ ESTILO & BELLEZA',
+    tagline: 'Tu cabello, nuestra arte',
+    servicios: [
+      {icon:'✂️', nombre:'CORTES', detalle:'Dama • Caballero'},
+      {icon:'🎨', nombre:'COLOR', detalle:'Tinte • Mechas • Balayage'},
+      {icon:'💇', nombre:'TRATAMIENTOS', detalle:'Keratina • Hidratación'},
+    ],
+    badges: [
+      {icon:'📵', label:'Agenda\nsin llamar'},
+      {icon:'⚡', label:'Atención\nrápida'},
+      {icon:'✨', label:'Resultados\npremium'},
+    ],
+  },
+  spa_unas: {
+    catLabel: 'SPA & UÑAS ✦ BELLEZA & CUIDADO',
+    tagline: 'Tu bienestar, nuestra misión',
+    servicios: [
+      {icon:'💅', nombre:'UÑAS', detalle:'Manicure • Gel • Acrílicas'},
+      {icon:'🌸', nombre:'SPA', detalle:'Relajación • Masajes'},
+      {icon:'✨', nombre:'TRATAMIENTOS', detalle:'Facial • Corporal'},
+    ],
+    badges: [
+      {icon:'💆', label:'Relájate\ncon nosotros'},
+      {icon:'✨', label:'Belleza\npremium'},
+      {icon:'✅', label:'100% seguro\ny confiable'},
+    ],
+  },
+  estetica_facial: {
+    catLabel: 'ESTÉTICA FACIAL ✦ BELLEZA & CUIDADO',
+    tagline: 'Tu piel, nuestra especialidad',
+    servicios: [
+      {icon:'🧖', nombre:'FACIAL', detalle:'Limpieza • Hidratación'},
+      {icon:'✨', nombre:'TRATAMIENTOS', detalle:'Lifting • Antienvejecimiento'},
+      {icon:'💄', nombre:'MAQUILLAJE', detalle:'Social • Artístico'},
+    ],
+    badges: [
+      {icon:'🌟', label:'Especialistas\ncertificados'},
+      {icon:'💆', label:'Cuida tu\npiel hoy'},
+      {icon:'✅', label:'100% seguro\ny confiable'},
+    ],
+  },
+};
+
+// ── SUPABASE ─────────────────────────────────────────────
+const SUPABASE_URL = 'https://djzloikdmahnqclmvhsf.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqemxvaWtkbWFobnFjbG12aHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTYyNTUsImV4cCI6MjA5Mjg3MjI1NX0.OKiBQUqkBT_iGsW1avHqPyl8sA4blfDc3jrEWPvzJTw';
+
+const slug = window.location.pathname.replace('/qr/', '').replace('/qr', '').split('/').filter(Boolean).pop() || 'ivonn-stilos-5c0a4d';
+
+function renderTemplate(cat) {
+  const t = TEMPLATES[cat] || TEMPLATES['barberia'];
+
+  // Servicios
+  document.getElementById('services-bar').innerHTML = t.servicios.map(s =>
+    `<div class="svc-card"><div class="svc-icon">${s.icon}</div><div><div class="svc-name">${s.nombre}</div><div class="svc-detail">${s.detalle}</div></div></div>`
+  ).join('');
+
+  // Badges
+  document.getElementById('left-badges').innerHTML = t.badges.map(b =>
+    `<div class="badge-card"><div class="badge-circle">${b.icon}</div><div class="badge-label">${b.label.replace('\n','<br>')}</div></div>`
+  ).join('');
+
+  return t;
+}
+
+async function cargar() {
+  const webUrl = 'https://filacero-web.vercel.app/' + slug;
+  document.getElementById('url-text').textContent = 'filacero.app/' + slug;
+
+  let nombre = 'MI NEGOCIO', cat = 'barberia', tagline = '';
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/negocios?slug=eq.' + slug + '&select=nombre,categoria&limit=1',
+      {headers: {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY}});
+    const d = await r.json();
+    if (d && d[0]) {
+      nombre = d[0].nombre.toUpperCase();
+      cat = d[0].categoria || 'barberia';
+      document.title = d[0].nombre + ' — FilaCero';
     }
-  }catch(e){}
-  QRCode.toCanvas(document.getElementById('qr-canvas'),webUrl,{
-    width:400,margin:1,
-    color:{dark:'#090909',light:'#FFFFFF'},
-    errorCorrectionLevel:'H'
+  } catch(e) {}
+
+  const t = renderTemplate(cat);
+  document.getElementById('biz-name').textContent = nombre;
+  document.getElementById('biz-cat').textContent = t.catLabel;
+  document.getElementById('biz-tagline').textContent = t.tagline;
+
+  QRCode.toCanvas(document.getElementById('qr-canvas'), webUrl, {
+    width: 390, margin: 1,
+    color: {dark: '#090909', light: '#FFFFFF'},
+    errorCorrectionLevel: 'H'
   });
 }
+
+async function descargarPNG() {
+  const btn = document.getElementById('btn-dl');
+  btn.disabled = true;
+  btn.textContent = '⏳ Generando...';
+  try {
+    const node = document.getElementById('flyer');
+    const dataUrl = await htmlToImage.toPng(node, {
+      width: 1080,
+      pixelRatio: 1,
+      backgroundColor: '#090909',
+    });
+    const a = document.createElement('a');
+    a.download = 'filacero-flyer-' + slug + '.png';
+    a.href = dataUrl;
+    a.click();
+    btn.textContent = '✅ Descargado';
+    setTimeout(() => { btn.disabled = false; btn.textContent = '📥 Descargar PNG'; }, 3000);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '❌ Error — intenta de nuevo';
+    console.error(e);
+  }
+}
+
 cargar();
 </script>
 </body>
