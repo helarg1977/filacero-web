@@ -2,292 +2,176 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FilaCero — Flyer Premium</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Lato:wght@300;400;700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<title>IVONN STILOS — FilaCero</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#111;display:flex;flex-direction:column;align-items:center;padding:20px;min-height:100vh;font-family:'Lato',sans-serif;}
-.print-btn{background:#7A2BFF;color:#fff;border:none;border-radius:12px;padding:12px 28px;font-weight:700;font-size:15px;cursor:pointer;margin-bottom:20px;font-family:'Lato',sans-serif;letter-spacing:0.5px;}
-.print-btn:hover{background:#B04DFF;}
-
-.flyer{
-  width:512px;
-  background:#050505;
-  border-radius:20px;
-  border:3px solid #7A2BFF;
-  box-shadow:0 0 40px rgba(122,43,255,0.4),0 0 80px rgba(122,43,255,0.15);
-  overflow:hidden;
-  position:relative;
-}
-
-/* HEADER */
-.header{
-  background:linear-gradient(160deg,#0a0a0a 0%,#140830 50%,#0a0a0a 100%);
-  padding:22px 24px 18px;
-  text-align:center;
-  border-bottom:1px solid rgba(122,43,255,0.3);
-  position:relative;
-}
-.logo-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;}
-.logo-circle{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7A2BFF,#B04DFF);display:flex;align-items:center;justify-content:center;}
-.logo-check{color:#fff;font-size:16px;font-weight:900;}
-.logo-name{font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;color:#fff;letter-spacing:2px;}
-.logo-dot{color:#B04DFF;}
-
-.img-row{display:flex;gap:8px;margin-bottom:14px;}
-.img-box{flex:1;height:140px;border-radius:10px;overflow:hidden;position:relative;border:1px solid rgba(183,77,255,0.3);}
-.img-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
-.img-left{background:linear-gradient(135deg,#0d0d1a 0%,#1a0d2e 50%,#0a0512 100%);}
-.img-right{background:linear-gradient(135deg,#0d0d1a 0%,#1a0d2e 50%,#120a1a 100%);}
-.img-icon{font-size:36px;opacity:0.8;}
-.img-label{font-size:11px;color:rgba(183,77,255,0.8);font-weight:700;letter-spacing:1px;text-transform:uppercase;}
-.img-glow{position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(to top,rgba(122,43,255,0.2),transparent);}
-
-.negocio-nombre{font-family:'Montserrat',sans-serif;font-weight:900;font-size:28px;color:#fff;letter-spacing:3px;text-transform:uppercase;line-height:1;margin-bottom:4px;text-shadow:0 0 20px rgba(183,77,255,0.4);}
-.negocio-cat{font-size:11px;color:#B04DFF;letter-spacing:3px;text-transform:uppercase;font-weight:700;}
-.divider{width:60px;height:2px;background:linear-gradient(90deg,transparent,#7A2BFF,transparent);margin:10px auto;}
-
-/* SERVICES */
-.services{display:flex;gap:6px;padding:14px 16px;background:rgba(122,43,255,0.05);border-top:1px solid rgba(122,43,255,0.2);border-bottom:1px solid rgba(122,43,255,0.2);}
-.svc{flex:1;text-align:center;padding:8px 4px;}
-.svc-icon{font-size:18px;margin-bottom:4px;}
-.svc-title{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;}
-.svc-sub{font-size:9px;color:rgba(183,77,255,0.7);margin-top:2px;}
-.svc-divider{width:1px;background:rgba(122,43,255,0.3);align-self:stretch;}
-
-/* BODY */
-.body{padding:18px 20px;display:flex;gap:14px;}
-.col-left{display:flex;flex-direction:column;gap:10px;width:95px;}
-.benefit{display:flex;align-items:center;gap:6px;}
-.benefit-icon{width:28px;height:28px;border-radius:6px;background:rgba(122,43,255,0.15);border:1px solid rgba(122,43,255,0.3);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
-.benefit-text{font-size:9px;font-weight:900;color:#fff;text-transform:uppercase;line-height:1.3;letter-spacing:0.5px;}
-
-.col-center{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;}
-.qr-wrap{background:#fff;border-radius:14px;padding:10px;border:2px solid #7A2BFF;box-shadow:0 0 20px rgba(122,43,255,0.3);}
-canvas{display:block;border-radius:6px;}
-.scan-text{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:900;color:#B04DFF;letter-spacing:1.5px;text-transform:uppercase;text-align:center;}
-.url-box{background:rgba(122,43,255,0.1);border:1px solid rgba(122,43,255,0.3);border-radius:20px;padding:4px 10px;font-size:9px;color:#C76DFF;font-weight:700;text-align:center;}
-
-.col-right{display:flex;flex-direction:column;justify-content:center;gap:8px;width:85px;}
-.emotional{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:#B04DFF;line-height:1.3;text-align:center;}
-.cta-right{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:0.5px;text-align:center;line-height:1.4;}
-.cta-purple{color:#B04DFF;}
-
-/* CITA */
-.cta-main{text-align:center;padding:0 20px 14px;}
-.cta-big{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:900;color:#fff;letter-spacing:2px;text-transform:uppercase;line-height:1.1;}
-.cta-big span{color:#B04DFF;}
-
-/* STEPS */
-.steps-section{background:rgba(122,43,255,0.08);border-top:1px solid rgba(122,43,255,0.2);border-bottom:1px solid rgba(122,43,255,0.2);padding:12px 20px;}
-.steps-title{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:900;color:#fff;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:10px;}
-.steps-title span{background:#7A2BFF;border-radius:20px;padding:2px 10px;}
-.steps-row{display:flex;align-items:center;justify-content:center;gap:0;}
-.step{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
-.step-icon{width:36px;height:36px;border-radius:8px;background:rgba(122,43,255,0.15);border:1px solid rgba(122,43,255,0.4);display:flex;align-items:center;justify-content:center;font-size:16px;}
-.step-num{font-size:9px;font-weight:900;color:#7A2BFF;text-transform:uppercase;letter-spacing:0.5px;}
-.step-label{font-size:9px;color:#D8D8D8;text-align:center;line-height:1.2;}
-.step-arrow{color:#7A2BFF;font-size:18px;font-weight:900;padding:0 4px;margin-bottom:14px;}
-
-/* STARS */
-.stars-row{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 20px;border-bottom:1px solid rgba(122,43,255,0.2);}
-.stars{color:#B04DFF;font-size:14px;letter-spacing:2px;}
-.stars-text{font-size:9px;color:#D8D8D8;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;line-height:1.3;}
-
-/* BENEFITS BAR */
-.benefits-bar{display:flex;padding:12px 10px;gap:0;}
-.ben{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:0 4px;}
-.ben-icon{font-size:16px;}
-.ben-title{font-size:8px;font-weight:900;color:#B04DFF;text-transform:uppercase;letter-spacing:0.5px;text-align:center;line-height:1.2;}
-.ben-sep{width:1px;background:rgba(122,43,255,0.2);align-self:stretch;}
-
-/* FOOTER */
-.footer{background:rgba(0,0,0,0.5);padding:10px;text-align:center;border-top:1px solid rgba(122,43,255,0.3);}
-.footer-text{font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;}
-.footer-brand{color:#7A2BFF;font-weight:900;font-family:'Montserrat',sans-serif;}
-
-@media print{
-  body{background:#050505;padding:0;}
-  .print-btn{display:none;}
-  .flyer{box-shadow:none;margin:0 auto;}
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#111;display:flex;flex-direction:column;align-items:center;padding:20px;font-family:'Montserrat',sans-serif;}
+.print-btn{background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:14px 32px;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:24px;font-family:'Montserrat',sans-serif;letter-spacing:1px;}
+.print-btn:hover{background:#6d28d9;}
+.flyer{width:1080px;background:#090909;font-family:'Montserrat',sans-serif;display:flex;flex-direction:column;position:relative;overflow:hidden;border:2px solid rgba(124,58,237,0.35);}
+.hero{height:540px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#090909;}
+.deco-l{position:absolute;left:0;top:0;bottom:0;width:38%;background:linear-gradient(to right,rgba(9,2,18,0.95) 0%,rgba(9,2,18,0.55) 55%,rgba(9,2,18,0) 100%),repeating-linear-gradient(-55deg,rgba(100,40,200,0.04) 0px,rgba(100,40,200,0.04) 1px,transparent 1px,transparent 18px);z-index:0;}
+.deco-r{position:absolute;right:0;top:0;bottom:0;width:38%;background:linear-gradient(to left,rgba(9,2,18,0.95) 0%,rgba(9,2,18,0.55) 55%,rgba(9,2,18,0) 100%),repeating-linear-gradient(55deg,rgba(150,70,240,0.04) 0px,rgba(150,70,240,0.04) 1px,transparent 1px,transparent 18px);z-index:0;}
+.glow{position:absolute;border-radius:50%;pointer-events:none;z-index:1;}
+.glow-l{left:6%;top:5%;width:260px;height:360px;background:radial-gradient(ellipse,rgba(90,30,190,0.28) 0%,transparent 68%);}
+.glow-r{right:6%;top:5%;width:260px;height:360px;background:radial-gradient(ellipse,rgba(150,70,230,0.22) 0%,transparent 68%);}
+.glow-ct{left:50%;top:50%;transform:translate(-50%,-50%);width:560px;height:380px;background:radial-gradient(ellipse,rgba(70,15,150,0.18) 0%,transparent 70%);}
+.hero-center{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;width:700px;gap:0;}
+.fc-logo-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;}
+.fc-logo-word{font-size:28px;font-weight:800;color:#fff;letter-spacing:0.5px;}
+.fc-logo-word em{color:#a855f7;font-style:normal;}
+.crown{font-size:36px;line-height:1;color:#c084fc;margin-bottom:10px;filter:drop-shadow(0 0 10px rgba(168,85,247,0.7));letter-spacing:6px;}
+.biz-name{font-size:108px;font-weight:900;color:#ffffff;letter-spacing:5px;line-height:0.92;margin-bottom:18px;text-shadow:0 0 50px rgba(168,85,247,0.4),0 3px 0 rgba(0,0,0,0.9);}
+.category{font-size:22px;font-weight:700;color:#c084fc;letter-spacing:5px;text-transform:uppercase;margin-bottom:10px;}
+.tagline{font-size:15px;font-weight:500;color:#888;letter-spacing:4.5px;text-transform:uppercase;}
+.tagline::before{content:'— ';}
+.tagline::after{content:' —';}
+.services-bar{flex-shrink:0;margin:-18px 44px 0;background:rgba(20,6,50,0.93);border:1.5px solid #4c1d95;border-radius:14px;display:flex;align-items:stretch;position:relative;z-index:20;}
+.svc-card{flex:1;display:flex;align-items:center;gap:14px;padding:22px 26px;}
+.svc-card+.svc-card{border-left:1.5px solid #4c1d95;}
+.svc-icon{font-size:32px;flex-shrink:0;filter:drop-shadow(0 0 6px rgba(168,85,247,0.55));}
+.svc-name{font-size:14px;font-weight:800;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.svc-detail{font-size:12px;color:#9ca3af;line-height:1.45;}
+.middle{flex:1;display:flex;align-items:center;padding:32px 44px 20px;gap:28px;min-height:0;}
+.left-badges{display:flex;flex-direction:column;gap:40px;width:148px;flex-shrink:0;}
+.badge-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;}
+.badge-circle{width:68px;height:68px;border:2px solid #7c3aed;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;color:#c084fc;background:rgba(124,58,237,0.08);box-shadow:0 0 0 1px rgba(124,58,237,0.18),0 0 18px rgba(124,58,237,0.22);}
+.badge-label{font-size:13px;font-weight:800;color:#fff;letter-spacing:0.4px;text-transform:uppercase;line-height:1.35;}
+.qr-wrap{flex:1;display:flex;justify-content:center;align-items:center;}
+.qr-outer{background:#ffffff;border-radius:26px;padding:24px;width:460px;height:460px;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 0 5px #7c3aed,0 0 0 10px rgba(124,58,237,0.28),0 0 70px rgba(124,58,237,0.50),0 0 130px rgba(124,58,237,0.22);}
+#qr-canvas{display:block;border-radius:4px;}
+.qr-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:8px 10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 4px 18px rgba(0,0,0,0.22);}
+.qr-overlay-word{font-size:12.5px;font-weight:800;color:#111;}
+.qr-overlay-word em{color:#7c3aed;font-style:normal;}
+.right-info{display:flex;flex-direction:column;gap:24px;width:158px;flex-shrink:0;text-align:right;}
+.right-slogan{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:36px;color:#fff;line-height:1.18;}
+.right-cta{font-size:23px;font-weight:800;color:#fff;line-height:1.28;text-transform:uppercase;}
+.right-cta .accent{color:#c084fc;}
+.stars{font-size:27px;color:#f59e0b;letter-spacing:3px;}
+.stars-cap{font-size:11.5px;font-weight:700;color:#d1d5db;text-transform:uppercase;letter-spacing:0.5px;line-height:1.42;margin-top:5px;}
+.cta-block{flex-shrink:0;text-align:center;padding:0 44px 22px;}
+.cta-headline{font-size:36px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:3px;margin-bottom:20px;}
+.cta-headline .ac{color:#c084fc;}
+.url-pill{display:inline-flex;align-items:center;gap:12px;background:rgba(12,5,28,0.92);border:1.5px solid #4c1d95;border-radius:44px;padding:15px 38px;font-size:17.5px;font-weight:600;color:#e2e8f0;letter-spacing:0.2px;}
+.url-globe{font-size:20px;color:#a855f7;}
+.howto{flex-shrink:0;margin:0 44px 22px;background:rgba(8,3,22,0.92);border:1.5px solid #2d1b5e;border-radius:18px;padding:0 40px 28px;}
+.howto-pill-wrap{text-align:center;margin-bottom:22px;}
+.howto-pill{display:inline-block;background:#7c3aed;color:#fff;font-size:14px;font-weight:800;letter-spacing:3px;text-transform:uppercase;padding:9px 36px;border-radius:0 0 20px 20px;}
+.steps{display:flex;align-items:center;justify-content:center;}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;}
+.step-circle{width:84px;height:84px;border-radius:50%;border:2.5px solid #7c3aed;display:flex;align-items:center;justify-content:center;font-size:34px;background:rgba(18,6,46,0.85);color:#c084fc;box-shadow:0 0 22px rgba(124,58,237,0.28);}
+.step-circle.active{background:#7c3aed;color:#fff;box-shadow:0 0 34px rgba(124,58,237,0.55);}
+.step-num{font-size:15px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:1px;}
+.step-sub{font-size:13px;font-weight:400;color:#9ca3af;margin-top:-4px;}
+.step-arrow{font-size:34px;color:#7c3aed;flex-shrink:0;padding-bottom:46px;filter:drop-shadow(0 0 8px rgba(124,58,237,0.5));}
+.perks{flex-shrink:0;background:linear-gradient(90deg,#4a1f96,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:space-around;padding:22px 32px;}
+.perk{display:flex;align-items:center;gap:10px;color:#fff;}
+.perk-icon{width:46px;height:46px;background:rgba(255,255,255,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.perk-txt{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;line-height:1.35;}
+.perk-sep{width:1.5px;height:40px;background:rgba(255,255,255,0.22);}
+.footer{flex-shrink:0;background:#040404;border-top:1.5px solid #1a0a38;display:flex;align-items:center;justify-content:center;gap:14px;padding:18px;}
+.footer-pw{font-size:12px;font-weight:500;color:#555;text-transform:uppercase;letter-spacing:2.5px;}
+.footer-logo{display:flex;align-items:center;gap:9px;}
+.footer-logo-name{font-size:20px;font-weight:800;color:#fff;letter-spacing:0.3px;}
+.footer-logo-name em{color:#a855f7;font-style:normal;}
+.flyer::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,#7c3aed 40%,#a855f7 60%,transparent 100%);z-index:999;}
+@media print{body{background:#090909;padding:0;}.print-btn{display:none;}.flyer{margin:0 auto;}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
 <body>
-
 <button class="print-btn" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
-
 <div class="flyer">
-
-  <!-- HEADER -->
-  <div class="header">
-    <div class="logo-row">
-      <div class="logo-circle"><span class="logo-check">✓</span></div>
-      <span class="logo-name">FILA<span class="logo-dot">●</span>CERO</span>
+  <section class="hero">
+    <div class="deco-l"></div>
+    <div class="deco-r"></div>
+    <div class="glow glow-l"></div>
+    <div class="glow glow-r"></div>
+    <div class="glow glow-ct"></div>
+    <div class="hero-center">
+      <div class="fc-logo-row">
+        <div class="fc-logo-word">Fila<em>Cero</em></div>
+      </div>
+      <div class="crown">♛</div>
+      <div class="biz-name" id="biz-name">IVONN STILOS</div>
+      <div class="category" id="biz-cat">Barbería ✦ Uñas &amp; Spa</div>
+      <div class="tagline">Tu estilo, nuestra pasión</div>
     </div>
-    <div class="img-row">
-      <div class="img-box img-left">
-        <div class="img-placeholder">
-          <div class="img-icon">✂️</div>
-          <div class="img-label">Barbería</div>
+  </section>
+  <div class="services-bar">
+    <div class="svc-card"><div class="svc-icon">✂️</div><div><div class="svc-name">Cortes</div><div class="svc-detail">Barba • Diseños</div></div></div>
+    <div class="svc-card"><div class="svc-icon">💅</div><div><div class="svc-name">Uñas</div><div class="svc-detail">Manicure • Gel • Acrílicas</div></div></div>
+    <div class="svc-card"><div class="svc-icon">🪷</div><div><div class="svc-name">Spa</div><div class="svc-detail">Relajación y cuidado</div></div></div>
+  </div>
+  <div class="middle">
+    <div class="left-badges">
+      <div class="badge-card"><div class="badge-circle">📵</div><div class="badge-label">Agenda<br>sin llamar</div></div>
+      <div class="badge-card"><div class="badge-circle">⚡</div><div class="badge-label">Sin filas<br>sin esperas</div></div>
+      <div class="badge-card"><div class="badge-circle">✅</div><div class="badge-label">100% seguro<br>y confiable</div></div>
+    </div>
+    <div class="qr-wrap">
+      <div class="qr-outer">
+        <canvas id="qr-canvas"></canvas>
+        <div class="qr-overlay">
+          <div class="qr-overlay-word">Fila<em>Cero</em></div>
         </div>
-        <div class="img-glow"></div>
-      </div>
-      <div class="img-box img-right">
-        <div class="img-placeholder">
-          <div class="img-icon">💅</div>
-          <div class="img-label">Uñas & Spa</div>
-        </div>
-        <div class="img-glow"></div>
       </div>
     </div>
-    <div class="negocio-nombre" id="negocio-nombre">IVONN STILOS</div>
-    <div class="negocio-cat" id="negocio-cat">BARBERÍA ✦ UÑAS & SPA</div>
-    <div class="divider"></div>
-    <div style="font-size:10px;color:#D8D8D8;letter-spacing:2px;text-transform:uppercase;">TU ESTILO, NUESTRA PASIÓN</div>
-  </div>
-
-  <!-- SERVICES -->
-  <div class="services">
-    <div class="svc">
-      <div class="svc-icon">✂️</div>
-      <div class="svc-title">CORTES</div>
-      <div class="svc-sub">Barba • Diseños</div>
-    </div>
-    <div class="svc-divider"></div>
-    <div class="svc">
-      <div class="svc-icon">💅</div>
-      <div class="svc-title">UÑAS</div>
-      <div class="svc-sub">Manicure • Gel</div>
-    </div>
-    <div class="svc-divider"></div>
-    <div class="svc">
-      <div class="svc-icon">🌸</div>
-      <div class="svc-title">SPA</div>
-      <div class="svc-sub">Relajación</div>
+    <div class="right-info">
+      <div class="right-slogan">¡Tu tiempo<br>vale más!</div>
+      <div class="right-cta">Escanea y<br>agenda tu<br><span class="accent">cita ahora</span></div>
+      <div><div class="stars">★★★★★</div><div class="stars-cap">Miles de clientes<br>ya confían en<br>nosotros</div></div>
     </div>
   </div>
-
-  <!-- BODY 3 COLS -->
-  <div class="body">
-    <div class="col-left">
-      <div class="benefit">
-        <div class="benefit-icon">📵</div>
-        <div class="benefit-text">AGENDA<br>SIN LLAMAR</div>
-      </div>
-      <div class="benefit">
-        <div class="benefit-icon">⚡</div>
-        <div class="benefit-text">SIN FILAS<br>SIN ESPERAS</div>
-      </div>
-      <div class="benefit">
-        <div class="benefit-icon">🛡️</div>
-        <div class="benefit-text">100% SEGURO<br>Y CONFIABLE</div>
-      </div>
-    </div>
-
-    <div class="col-center">
-      <div class="qr-wrap">
-        <canvas id="qr-canvas" width="160" height="160"></canvas>
-      </div>
-      <div class="scan-text">ESCANEA AQUÍ</div>
-      <div class="url-box" id="url-box">filacero.app/negocio</div>
-    </div>
-
-    <div class="col-right">
-      <div class="emotional">¡Tu tiempo<br>vale más!</div>
-      <div class="cta-right">ESCANEA Y<br><span class="cta-purple">AGENDA TU</span><br>CITA AHORA</div>
+  <div class="cta-block">
+    <div class="cta-headline">Agenda tu cita <span class="ac">sin llamar</span></div>
+    <span class="url-pill" id="url-pill"><span class="url-globe">🌐</span><span id="url-text">filacero-web.vercel.app/negocio</span></span>
+  </div>
+  <div class="howto">
+    <div class="howto-pill-wrap"><span class="howto-pill">Así de fácil</span></div>
+    <div class="steps">
+      <div class="step"><div class="step-circle">📱</div><div class="step-num">1. Escanea</div><div class="step-sub">el QR</div></div>
+      <div class="step-arrow">→</div>
+      <div class="step"><div class="step-circle active">👆</div><div class="step-num">2. Elige</div><div class="step-sub">tu servicio</div></div>
+      <div class="step-arrow">→</div>
+      <div class="step"><div class="step-circle">📅</div><div class="step-num">3. Confirma</div><div class="step-sub">tu cita</div></div>
     </div>
   </div>
-
-  <!-- CTA MAIN -->
-  <div class="cta-main">
-    <div class="cta-big">AGENDA TU CITA <span>SIN LLAMAR</span></div>
+  <div class="perks">
+    <div class="perk"><div class="perk-icon">⭐</div><div class="perk-txt">Acumula<br>puntos</div></div>
+    <div class="perk-sep"></div>
+    <div class="perk"><div class="perk-icon">%</div><div class="perk-txt">Descuentos<br>exclusivos</div></div>
+    <div class="perk-sep"></div>
+    <div class="perk"><div class="perk-icon">🎁</div><div class="perk-txt">Promociones<br>especiales</div></div>
+    <div class="perk-sep"></div>
+    <div class="perk"><div class="perk-icon">👑</div><div class="perk-txt">Servicios<br>premium</div></div>
   </div>
-
-  <!-- STEPS -->
-  <div class="steps-section">
-    <div class="steps-title"><span>ASÍ DE FÁCIL</span></div>
-    <div class="steps-row">
-      <div class="step">
-        <div class="step-icon">📱</div>
-        <div class="step-num">ESCANEA</div>
-        <div class="step-label">el QR</div>
-      </div>
-      <div class="step-arrow">›</div>
-      <div class="step">
-        <div class="step-icon">✂️</div>
-        <div class="step-num">ELIGE</div>
-        <div class="step-label">tu servicio</div>
-      </div>
-      <div class="step-arrow">›</div>
-      <div class="step">
-        <div class="step-icon">📅</div>
-        <div class="step-num">CONFIRMA</div>
-        <div class="step-label">tu cita</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- STARS -->
-  <div class="stars-row">
-    <div class="stars">★★★★★</div>
-    <div class="stars-text">MILES DE CLIENTES<br>YA CONFÍAN EN NOSOTROS</div>
-  </div>
-
-  <!-- BENEFITS BAR -->
-  <div class="benefits-bar">
-    <div class="ben">
-      <div class="ben-icon">⭐</div>
-      <div class="ben-title">ACUMULA<br>PUNTOS</div>
-    </div>
-    <div class="ben-sep"></div>
-    <div class="ben">
-      <div class="ben-icon">🎯</div>
-      <div class="ben-title">DESCUENTOS<br>EXCLUSIVOS</div>
-    </div>
-    <div class="ben-sep"></div>
-    <div class="ben">
-      <div class="ben-icon">🎁</div>
-      <div class="ben-title">PROMOCIONES<br>ESPECIALES</div>
-    </div>
-    <div class="ben-sep"></div>
-    <div class="ben">
-      <div class="ben-icon">👑</div>
-      <div class="ben-title">SERVICIOS<br>PREMIUM</div>
-    </div>
-  </div>
-
-  <!-- FOOTER -->
   <div class="footer">
-    <div class="footer-text">POWERED BY <span class="footer-brand">FILACERO</span> · LA APP DE TU BARRIO</div>
+    <span class="footer-pw">Powered by</span>
+    <div class="footer-logo"><span class="footer-logo-name">Fila<em>Cero</em></span></div>
   </div>
-
 </div>
-
 <script>
 const SUPABASE_URL='https://djzloikdmahnqclmvhsf.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqemxvaWtkbWFobnFjbG12aHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTYyNTUsImV4cCI6MjA5Mjg3MjI1NX0.OKiBQUqkBT_iGsW1avHqPyl8sA4blfDc3jrEWPvzJTw';
-const slug=window.location.pathname.replace('/qr/','').replace('/qr','').split('/').filter(Boolean).pop()||'';
+const slug=window.location.pathname.replace('/qr/','').replace('/qr','').split('/').filter(Boolean).pop()||'ivonn-stilos-5c0a4d';
 async function cargar(){
-  const webUrl=slug?`https://filacero-web.vercel.app/${slug}`:'https://filacero-web.vercel.app';
-  if(slug){
-    try{
-      const r=await fetch(`${SUPABASE_URL}/rest/v1/negocios?slug=eq.${slug}&select=nombre,categoria&limit=1`,
-        {headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}});
-      const d=await r.json();
-      if(d&&d[0]){
-        document.getElementById('negocio-nombre').textContent=d[0].nombre.toUpperCase();
-        if(d[0].categoria)document.getElementById('negocio-cat').textContent=d[0].categoria.toUpperCase()+' ✦ TU NEGOCIO DEL BARRIO';
-        document.title=d[0].nombre+' — FilaCero';
-      }
-    }catch(e){}
-  }
-  document.getElementById('url-box').textContent='filacero.app/'+slug;
+  const webUrl='https://filacero-web.vercel.app/'+slug;
+  document.getElementById('url-text').textContent='filacero-web.vercel.app/'+slug;
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/negocios?slug=eq.'+slug+'&select=nombre,categoria&limit=1',
+      {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
+    const d=await r.json();
+    if(d&&d[0]){
+      document.getElementById('biz-name').textContent=d[0].nombre.toUpperCase();
+      if(d[0].categoria)document.getElementById('biz-cat').textContent=d[0].categoria+' ✦ Tu negocio del barrio';
+      document.title=d[0].nombre+' — FilaCero';
+    }
+  }catch(e){}
   QRCode.toCanvas(document.getElementById('qr-canvas'),webUrl,{
-    width:160,margin:1,
-    color:{dark:'#050505',light:'#FFFFFF'},
+    width:400,margin:1,
+    color:{dark:'#090909',light:'#FFFFFF'},
     errorCorrectionLevel:'H'
   });
 }
