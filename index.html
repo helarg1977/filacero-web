@@ -484,8 +484,8 @@ async function confirm2(){
     const {data:sn}=await sb.rpc('obtener_slots_disponibles',{p_negocio_id:neg.id,p_fecha:diaSel,p_duracion_min:svcSel.duracion_min,p_empleado_id:empSel||null});
     const libre=(sn||[]).find(s=>s.hora===slotSel&&s.disponible!==false);
     if(!libre){err='⚠️ Esa hora ya fue tomada. Elige otra.';slots=sn||[];step=3;loading=false;render();return;}
-    const {error:ce}=await sb.from('citas').insert({negocio_id:neg.id,cliente_id:cId,servicio_id:svcSel.id,empleado_id:empSel||null,fecha_hora:`${diaSel}T${slotSel}:00-05:00`,estado:'confirmada',precio_total:svcSel.precio||0,notas:`Web: ${nombre}`});
-    if(ce){if((ce.message||'').includes('unique')||(ce.message||'').includes('duplicate')){err='⚠️ Esa hora ya fue tomada.';step=3;slotSel=null;}else{err=ce.message;}loading=false;render();return;}
+    const {error:ce}=await sb.rpc('crear_cita_web',{p_negocio_id:neg.id,p_cliente_id:cId,p_servicio_id:svcSel.id,p_empleado_id:empSel||null,p_fecha_hora:`${diaSel}T${slotSel}:00-05:00`,p_precio_total:svcSel.precio||0,p_notas:`Web: ${nombre}`});
+    if(ce){if((ce.message||'').includes('tomado')){err='⚠️ Esa hora ya fue tomada.';step=3;slotSel=null;}else{err=ce.message;}loading=false;render();return;}
     loading=false;step=5;render();
   }catch(e){err=e.message||'Error al agendar';loading=false;render();}
 }
