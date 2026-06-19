@@ -478,18 +478,9 @@ async function confirm2(){
   loading=true;err='';render();
   try{
     // Buscar cliente existente
-    let cId=null;
-    const {data:clientes}=await sb.from('clientes').select('id').eq('whatsapp',celular.trim()).limit(1);
-    if(clientes&&clientes.length>0){
-      cId=clientes[0].id;
-    } else {
-      // Crear cliente nuevo con INSERT simple
-      const {data:nc,error:ne}=await sb.from('clientes')
-        .insert({nombre:nombre.trim(),whatsapp:celular.trim()})
-        .select('id').single();
-      if(ne)throw new Error('Error al crear cliente: '+ne.message);
-      cId=nc.id;
-    }
+    const {data:cIdData,error:ceErr}=await sb.rpc('crear_cliente_web',{p_nombre:nombre.trim(),p_whatsapp:celular.trim()});
+    if(ceErr)throw new Error('Error al crear cliente: '+ceErr.message);
+    const cId=cIdData;
     const {data:sn}=await sb.rpc('obtener_slots_disponibles',{p_negocio_id:neg.id,p_fecha:diaSel,p_duracion_min:svcSel.duracion_min,p_empleado_id:empSel||null});
     const libre=(sn||[]).find(s=>s.hora===slotSel&&s.disponible!==false);
     if(!libre){err='⚠️ Esa hora ya fue tomada. Elige otra.';slots=sn||[];step=3;loading=false;render();return;}
