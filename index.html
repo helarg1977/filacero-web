@@ -486,15 +486,9 @@ async function confirm2(){
     if(!libre){err='⚠️ Esa hora ya fue tomada. Elige otra.';slots=sn||[];step=3;loading=false;render();return;}
     const {error:ce}=await sb.rpc('crear_cita_web',{p_negocio_id:neg.id,p_cliente_id:cId,p_servicio_id:svcSel.id,p_empleado_id:empSel||null,p_fecha_hora:`${diaSel}T${slotSel}:00-05:00`,p_precio_total:svcSel.precio||0,p_notas:`Web: ${nombre}`});
     if(ce){if((ce.message||'').includes('tomado')){err='⚠️ Esa hora ya fue tomada.';step=3;slotSel=null;}else{err=ce.message;}loading=false;render();return;}
-    // Notificar al dueño con push real (no bloquea el flujo si falla)
+    // Notificar al dueño con push real via RPC segura (no requiere auth ni expone push_tokens al cliente)
     try{
-      const {data:tk}=await sb.from('push_tokens').select('token').eq('user_id',neg.owner_id).maybeSingle();
-      if(tk?.token){
-        await fetch('https://exp.host/--/api/v2/push/send',{
-          method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({to:tk.token,title:'📅 ¡Nueva cita agendada!',body:`${nombre} agendó desde la web a las ${slotSel}`,sound:'default',priority:'high'})
-        });
-      }
+      await sb.rpc('enviar_push_dueno_web',{p_negocio_id:neg.id,p_titulo:'📅 ¡Nueva cita agendada!',p_cuerpo:`${nombre} agendó desde la web a las ${slotSel}`});
     }catch(pe){}
     loading=false;step=5;render();
   }catch(e){err=e.message||'Error al agendar';loading=false;render();}
