@@ -96,6 +96,8 @@
     .eb.on .ea{background:var(--purple);color:#fff;border-color:var(--purple);}
     .en{font-size:10px;font-weight:700;color:#777;font-family:'Montserrat',sans-serif;}
     .ee{font-size:8px;color:#999;font-family:'Montserrat',sans-serif;}
+    .foto-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:999;}
+    .foto-ampliada{width:90%;max-height:70%;object-fit:contain;border-radius:16px;}
     .dias{display:flex;gap:7px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;}
     .db{min-width:48px;padding:9px 7px;border-radius:12px;background:var(--gray);border:2px solid transparent;cursor:pointer;text-align:center;transition:var(--t);}
     .db.on{background:var(--purple);border-color:var(--purple);}
@@ -242,7 +244,7 @@ const {createClient}=supabase;
 const sb=createClient('https://djzloikdmahnqclmvhsf.supabase.co','sb_publishable_3exCxfU-Hrc0aKyF8SV0kQ_Xsq70vnr');
 const DIAS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 const EMOJIS=['✂️','💅','💆','🪮','💈','🧖','👶','💋','🌟','✨'];
-let neg=null,svcs=[],emps=[],step=1,svcSel=null,empSel=null,diaSel=null,slotSel=null,slots=[];
+let neg=null,svcs=[],emps=[],step=1,svcSel=null,empSel=null,diaSel=null,slotSel=null,slots=[],fotoAmpliada=null;
 let nombre='',celular='',loading=false,err='';
 
 function getSlug(){return location.pathname.split('/').filter(Boolean)[0]||null;}
@@ -411,9 +413,12 @@ function r2(){
         <div class="ea">🎲</div><div class="en">Cualquiera</div>
       </button>
       ${emps.map(e=>`<button class="eb ${empSel===e.id?'on':''}" onclick="empSel='${e.id}';render()">
-        ${e.foto_url?`<div class="ea" style="background-image:url('${e.foto_url}');background-size:cover;background-position:center"></div>`:`<div class="ea">${(e.nombre||'?')[0]}</div>`}
+        ${e.foto_url?`<div class="ea" style="background-image:url('${e.foto_url}');background-size:cover;background-position:center" onclick="event.stopPropagation();fotoAmpliada='${e.foto_url}';render()"></div>`:`<div class="ea">${(e.nombre||'?')[0]}</div>`}
         <div class="en">${e.nombre.split(' ')[0]}</div>${e.especialidad?`<div class="ee">${e.especialidad}</div>`:''}
       </button>`).join('')}
+    ${fotoAmpliada?`<div class="foto-overlay" onclick="fotoAmpliada=null;render()">
+      <img src="${fotoAmpliada}" class="foto-ampliada"/>
+    </div>`:''}
     </div>`:'';
   document.getElementById('p-content').innerHTML=`
     ${err?`<div class="err">${err}</div>`:''}
