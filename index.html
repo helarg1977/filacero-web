@@ -410,7 +410,8 @@ function r2(){
         <div class="ea">🎲</div><div class="en">Cualquiera</div>
       </button>
       ${emps.map(e=>`<button class="eb ${empSel===e.id?'on':''}" onclick="empSel='${e.id}';render()">
-        <div class="ea">${(e.nombre||'?')[0]}</div><div class="en">${e.nombre.split(' ')[0]}</div>
+        ${e.foto_url?`<div class="ea" style="background-image:url('${e.foto_url}');background-size:cover;background-position:center"></div>`:`<div class="ea">${(e.nombre||'?')[0]}</div>`}
+        <div class="en">${e.nombre.split(' ')[0]}</div>${e.especialidad?`<div class="ee">${e.especialidad}</div>`:''}
       </button>`).join('')}
     </div>`:'';
   document.getElementById('p-content').innerHTML=`
