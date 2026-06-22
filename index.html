@@ -279,6 +279,24 @@ function checkFotosEmpty(){
   if(visible.length===0) document.getElementById('fotos').style.display='none';
 }
 
+async function cargarPruebaSocial(){
+  try{
+    const inicioMes=new Date();inicioMes.setDate(1);inicioMes.setHours(0,0,0,0);
+    const {count}=await sb.from('citas').select('id',{count:'exact',head:true})
+      .eq('negocio_id',neg.id).gte('created_at',inicioMes.toISOString())
+      .not('estado','in','(cancelada_cliente,cancelada_negocio)');
+    const el=document.getElementById('social-proof');
+    const txt=document.getElementById('sp-text');
+    if(count&&count>0){
+      txt.textContent=count===1?'1 cita agendada este mes':count+' citas agendadas este mes';
+      el.style.display='flex';
+    }else{
+      txt.textContent='Sé el primero en agendar';
+      el.style.display='flex';
+    }
+  }catch(e){}
+}
+
 async function init(){
   const s=getSlug();
   if(!s){showErr('Negocio no encontrado');return;}
