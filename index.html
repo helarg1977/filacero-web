@@ -298,6 +298,7 @@ async function init(){
   document.title=neg.nombre+' — FilaCero';
   document.getElementById('h-nombre').textContent=neg.nombre;
   document.getElementById('h-desc').textContent=neg.descripcion||'Agenda tu cita en segundos';
+  cargarPruebaSocial();
   if(neg.direccion){
     document.getElementById('c-dir').style.display='flex';
     document.getElementById('t-dir').textContent=neg.direccion;
