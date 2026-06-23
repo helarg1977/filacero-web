@@ -385,13 +385,16 @@ async function init(){
   new QRCode(document.getElementById('qr'),{text:location.href,width:200,height:200,colorDark:'#8A3FFC',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
   const {data:s2}=await sb.from('servicios').select('*').eq('negocio_id',neg.id).eq('activo',true);
   svcs=s2||[];
-  document.getElementById('svc-grid').innerHTML=svcs.map((s,i)=>`
+  document.getElementById('svc-grid').innerHTML=svcs.map((s,i)=>{
+    const img=imagenServicio(s.nombre);
+    return `
     <div class="svc-card">
-      <div class="svc-badge">${(s.nombre||'?')[0].toUpperCase()}</div>
+      ${img?`<div class="svc-img" style="background-image:url('${img}')"></div>`:`<div class="svc-badge">${(s.nombre||'?')[0].toUpperCase()}</div>`}
       <div class="svc-name">${s.nombre}</div>
       <div class="svc-price">$${Number(s.precio||0).toLocaleString('es-CO')}</div>
       <div class="svc-star">★ FilaCero</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   const {data:e2}=await sb.from('empleados').select('*').eq('negocio_id',neg.id).eq('activo',true);
   emps=e2||[];
 
