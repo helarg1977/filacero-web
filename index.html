@@ -366,7 +366,7 @@ async function init(){
   svcs=s2||[];
   document.getElementById('svc-grid').innerHTML=svcs.map((s,i)=>`
     <div class="svc-card">
-      <span class="svc-emoji">${EMOJIS[i%EMOJIS.length]}</span>
+      <div class="svc-badge">${(s.nombre||'?')[0].toUpperCase()}</div>
       <div class="svc-name">${s.nombre}</div>
       <div class="svc-price">$${Number(s.precio||0).toLocaleString('es-CO')}</div>
       <div class="svc-star">★ FilaCero</div>
