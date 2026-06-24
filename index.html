@@ -72,7 +72,7 @@
     .svc-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
     .svc-badge{width:46px;height:46px;border-radius:50%;background:linear-gradient(145deg,var(--purple-light),var(--purple-dark));display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-family:'Playfair Display',serif;font-style:italic;font-size:20px;font-weight:900;color:#fff;box-shadow:0 4px 14px rgba(168,85,247,0.4),inset 0 1px 0 rgba(255,255,255,0.25);transition:var(--t);}
     .svc-card:hover .svc-badge{transform:scale(1.08) rotate(-3deg);}
-    .svc-img{width:100%;height:90px;border-radius:12px;background-size:cover;background-position:center;margin-bottom:14px;box-shadow:0 4px 14px rgba(0,0,0,0.35),inset 0 0 0 1px rgba(168,85,247,0.3);transition:var(--t);}
+    .svc-img{width:100%;height:90px;border-radius:12px;object-fit:cover;display:block;margin-bottom:14px;box-shadow:0 4px 14px rgba(0,0,0,0.35);transition:var(--t);background:#1a0f33;}
     .svc-card:hover .svc-img{transform:scale(1.03);box-shadow:0 8px 20px rgba(168,85,247,0.3),inset 0 0 0 1px rgba(168,85,247,0.5);}
     .svc-name{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:#fff;}
     .svc-price{font-size:17px;font-weight:900;color:var(--purple);margin-top:6px;font-family:'Montserrat',sans-serif;}
@@ -396,7 +396,7 @@ async function init(){
     const img=imagenServicio(s.nombre);
     return `
     <div class="svc-card">
-      ${img?`<div class="svc-img" style="background-image:url('${img}')"></div>`:`<div class="svc-badge">${(s.nombre||'?')[0].toUpperCase()}</div>`}
+      ${img?`<img class="svc-img" src="${img}" loading="lazy" alt="${s.nombre}">`:`<div class="svc-badge">${(s.nombre||'?')[0].toUpperCase()}</div>`}
       <div class="svc-name">${s.nombre}</div>
       <div class="svc-price">$${Number(s.precio||0).toLocaleString('es-CO')}</div>
       <div class="svc-star">★ FilaCero</div>
