@@ -657,7 +657,7 @@ function r3(){
 function r4(){
   document.getElementById('p-title').textContent='👤 Asegura tu cita';setDots(4,4);
   const precio=Number(svcSel?.precio||0);
-  abonoPct=neg.abono_pct_basico||20;
+  abonoPct=20; // Fijo en 20% para todos los negocios por decisión estratégica (no usar abono_pct_basico todavía)
   abonoMonto=Math.round(precio*(abonoPct/100)/1000)*1000;
   const resto=precio-abonoMonto;
   const numPago=neg.nequi_numero||neg.daviplata_numero||neg.whatsapp||'—';
