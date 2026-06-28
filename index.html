@@ -729,10 +729,11 @@ async function confirm2(){
     const {error:upErr}=await sb.storage.from('comprobantes').upload(path,abonoFile,{contentType:abonoFile.type||'image/jpeg'});
     if(upErr)throw new Error('No se pudo subir el comprobante: '+upErr.message);
 
-    const {error:ce}=await sb.rpc('crear_cita_web_v2',{
+    const {error:ce}=await sb.rpc('crear_cita_web_v3',{
       p_negocio_id:neg.id,p_cliente_id:cId,p_servicio_id:svcSel.id,p_empleado_id:empSel||null,
       p_fecha_hora:`${diaSel}T${slotSel}:00-05:00`,p_precio_total:svcSel.precio||0,p_notas:`Web: ${nombre}`,
-      p_abono_pct:abonoPct,p_abono_monto:abonoMonto,p_abono_comprobante_url:path
+      p_abono_pct:abonoPct,p_abono_monto:abonoMonto,p_abono_comprobante_url:path,
+      p_metodo_pago:neg.nequi_numero?'nequi':'daviplata'
     });
     if(ce){if((ce.message||'').includes('tomado')){err='⚠️ Esa hora ya fue tomada.';step=3;slotSel=null;}else{err=ce.message;}loading=false;render();return;}
 
