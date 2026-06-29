@@ -132,6 +132,23 @@ h1.hero-title{font-family:var(--font-display);font-weight:700;font-size:clamp(36
 .ba-card:hover .ba-tag.tag-after{opacity:1;}
 .ba-hint{position:absolute;bottom:10px;right:10px;z-index:2;background:rgba(10,7,16,.65);backdrop-filter:blur(8px);border-radius:100px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;}
 
+/* PROMOCIONES */
+#promos{padding:0 0 40px;}
+.promos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;}
+.promo-card{
+  background:linear-gradient(135deg,var(--gold-soft),rgba(242,184,92,.04));
+  border:1.5px solid rgba(242,184,92,.4);border-radius:18px;padding:18px 20px;
+  display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;
+}
+.promo-badge{
+  background:var(--gold);color:#2A1B05;font-weight:800;font-size:13px;
+  border-radius:12px;width:50px;height:50px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;line-height:1.1;text-align:center;
+}
+.promo-card h4{font-size:14.5px;font-weight:800;color:#fff;margin-bottom:3px;}
+.promo-card p{font-size:12px;color:var(--text2);font-weight:600;}
+.promo-card .promo-vence{font-size:10.5px;color:var(--gold);font-weight:700;margin-top:4px;display:block;}
+
 #fotos{padding:54px 0;}
 #fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
 .foto-item{border-radius:14px;overflow:hidden;aspect-ratio:1;cursor:zoom-in;position:relative;border:1px solid var(--line);}
@@ -315,6 +332,12 @@ footer{padding:36px 0 110px;border-top:1px solid var(--line);text-align:center;}
         <div><h5>Confirmación rápida</h5><p>Por WhatsApp en minutos</p></div>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="promos" class="scroll-reveal" style="display:none">
+  <div class="container">
+    <div id="promos-grid" class="promos-grid"></div>
   </div>
 </section>
 
@@ -552,6 +575,27 @@ async function init(){
         <span class="svc-price">$${Number(s.precio||0).toLocaleString('es-CO')}</span>
       </div>
     </div>`).join('');
+
+  // Promociones activas
+  const hoyISO=new Date().toLocaleDateString('en-CA',{timeZone:'America/Bogota'});
+  const {data:promos}=await sb.from('promociones').select('*,servicio:servicios(nombre)')
+    .eq('negocio_id',neg.id).eq('activa',true)
+    .or(`fecha_fin.is.null,fecha_fin.gte.${hoyISO}`);
+  if(promos&&promos.length>0){
+    document.getElementById('promos-grid').innerHTML=promos.map(p=>{
+      const badge=p.descuento_pct?`-${p.descuento_pct}%`:(p.precio_promo?'$'+Number(p.precio_promo).toLocaleString('es-CO'):'🎯');
+      const vence=p.fecha_fin?`Termina ${new Date(p.fecha_fin+'T00:00:00').toLocaleDateString('es-CO',{day:'numeric',month:'short'})}`:'';
+      return `<div class="promo-card">
+        <div class="promo-badge">${badge}</div>
+        <div>
+          <h4>${p.titulo}</h4>
+          <p>${p.descripcion||(p.servicio?.nombre||'')}</p>
+          ${vence?`<span class="promo-vence">⏳ ${vence}</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById('promos').style.display='block';
+  }
 
   const {data:e2}=await sb.from('empleados').select('*').eq('negocio_id',neg.id).eq('activo',true);
   emps=e2||[];
