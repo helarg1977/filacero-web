@@ -38,6 +38,7 @@ section{position:relative;z-index:1;}
 .topbar-logo{width:32px;height:32px;border-radius:9px;object-fit:cover;border:1px solid var(--line);background:var(--surface);}
 .topbar-name{font-family:var(--font-display);font-weight:700;font-size:16px;}
 .topbar-verified{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--gold);background:var(--gold-soft);border:1px solid rgba(242,184,92,.3);padding:2px 7px;border-radius:100px;font-weight:700;margin-left:6px;}
+.topbar-barrio{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#fff;background:linear-gradient(135deg,var(--violet),var(--magenta));padding:2px 8px;border-radius:100px;font-weight:700;margin-left:6px;}
 .topbar-cta{background:linear-gradient(135deg,var(--violet),var(--magenta));color:#fff;font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;box-shadow:0 8px 22px rgba(124,58,237,.4);white-space:nowrap;border:none;cursor:pointer;}
 
 /* HERO */
@@ -254,7 +255,7 @@ footer{padding:36px 0 110px;border-top:1px solid var(--line);text-align:center;}
 <div class="topbar">
   <div class="topbar-brand">
     <img class="topbar-logo" id="tb-logo" src="" alt="">
-    <span class="topbar-name" id="tb-nombre">Negocio<span class="topbar-verified">✓ Verificado</span></span>
+    <span class="topbar-name" id="tb-nombre">Negocio<span class="topbar-verified">✓ Verificado</span><span class="topbar-barrio" id="tb-barrio" style="display:none">🏆 Negocio del Barrio</span></span>
   </div>
   <button class="topbar-cta" onclick="openBooking()">Reservar mi cita</button>
 </div>
@@ -265,6 +266,9 @@ footer{padding:36px 0 110px;border-top:1px solid var(--line);text-align:center;}
       <div class="trust-pill" id="hero-rating" style="display:none">
         <span class="stars">★★★★★</span>
         <b id="r-num">5.0</b><span class="dim" id="r-count">· 0 reseñas</span>
+      </div>
+      <div class="trust-pill" id="hero-barrio" style="display:none;background:linear-gradient(135deg,var(--violet),var(--magenta));border-color:transparent;color:#fff">
+        🏆 <b style="color:#fff">Negocio del Barrio</b>
       </div>
       <div class="status-row">
         <span class="status-open" id="status-open"><span class="pulse-dot"></span> Abierto ahora</span>
@@ -506,6 +510,12 @@ async function init(){
     document.getElementById('r-num').textContent=Number(rating).toFixed(1);
     document.getElementById('r-count').textContent='· '+(neg.total_resenas||0)+' reseñas';
     document.getElementById('hero-rating').style.display='inline-flex';
+  }
+
+  // Badge Negocio del Barrio
+  if(neg.badge_barrio){
+    document.getElementById('tb-barrio').style.display='inline-flex';
+    document.getElementById('hero-barrio').style.display='inline-flex';
   }
 
   // Abierto ahora
