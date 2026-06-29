@@ -116,6 +116,21 @@ h1.hero-title{font-family:var(--font-display);font-weight:700;font-size:clamp(36
 .fid-caption b{color:var(--gold);}
 
 /* FOTOS */
+/* TRANSFORMACIÓN antes/después */
+#transformacion{padding:54px 0;}
+.transf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+.ba-card{border-radius:16px;overflow:hidden;position:relative;aspect-ratio:3/4;border:1px solid var(--line);cursor:pointer;}
+.ba-imgs{position:relative;width:100%;height:100%;}
+.ba-imgs img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .5s;}
+.ba-imgs img.after{opacity:0;}
+.ba-card:hover .ba-imgs img.after{opacity:1;}
+.ba-card:hover .ba-imgs img.before{opacity:0;}
+.ba-tag{position:absolute;top:10px;left:10px;z-index:2;background:rgba(10,7,16,.65);backdrop-filter:blur(8px);padding:4px 10px;border-radius:100px;font-size:10px;font-weight:800;letter-spacing:.04em;transition:opacity .3s;}
+.ba-card:hover .ba-tag.tag-before{opacity:0;}
+.ba-tag.tag-after{opacity:0;color:var(--ok);}
+.ba-card:hover .ba-tag.tag-after{opacity:1;}
+.ba-hint{position:absolute;bottom:10px;right:10px;z-index:2;background:rgba(10,7,16,.65);backdrop-filter:blur(8px);border-radius:100px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;}
+
 #fotos{padding:54px 0;}
 #fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
 .foto-item{border-radius:14px;overflow:hidden;aspect-ratio:1;cursor:zoom-in;position:relative;border:1px solid var(--line);}
@@ -317,6 +332,17 @@ footer{padding:36px 0 110px;border-top:1px solid var(--line);text-align:center;}
       <div class="fid-dots" id="fid-dots"></div>
       <p class="fid-caption" id="fid-caption">—</p>
     </div>
+  </div>
+</section>
+
+<section id="transformacion" class="scroll-reveal" style="display:none">
+  <div class="container">
+    <div class="sec-head">
+      <span class="sec-eyebrow">Resultados reales</span>
+      <h2 class="sec-title">Mira la <em>diferencia</em></h2>
+      <p style="text-align:center;color:var(--text2);font-size:13px;margin-top:6px">Toca cada foto para ver el antes y el después</p>
+    </div>
+    <div id="transform-grid" class="transf-grid"></div>
   </div>
 </section>
 
@@ -544,9 +570,31 @@ async function init(){
       </div>`;
     });
   }
-  const {data:resultados}=await sb.from('fotos_resultado').select('foto_url,negocio_nombre').eq('negocio_id',neg.id).limit(6);
+  const {data:resultados}=await sb.from('fotos_resultado').select('foto_url,foto_antes_url,negocio_nombre').eq('negocio_id',neg.id).limit(12);
+  let transformHtml='';
   if(resultados&&resultados.length>0){
-    resultados.forEach(f=>{ fotosHtml+=`<div class="foto-item"><img src="${f.foto_url}"/></div>`; });
+    resultados.forEach(f=>{
+      if(f.foto_antes_url){
+        transformHtml+=`<div class="ba-card">
+          <div class="ba-imgs">
+            <img class="before" src="${f.foto_antes_url}" loading="lazy">
+            <img class="after" src="${f.foto_url}" loading="lazy">
+          </div>
+          <span class="ba-tag tag-before">ANTES</span>
+          <span class="ba-tag tag-after">DESPUÉS</span>
+          <span class="ba-hint">⇄</span>
+        </div>`;
+      } else {
+        fotosHtml+=`<div class="foto-item" onclick="abrirFoto(this)" data-url="${f.foto_url}">
+          <img src="${f.foto_url}" loading="lazy"/>
+          <div class="foto-overlay"><span>🔍</span></div>
+        </div>`;
+      }
+    });
+  }
+  if(transformHtml){
+    document.getElementById('transform-grid').innerHTML=transformHtml;
+    document.getElementById('transformacion').style.display='block';
   }
   if(fotosHtml){
     document.getElementById('fotos-grid').innerHTML=fotosHtml;
