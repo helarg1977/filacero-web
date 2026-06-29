@@ -718,8 +718,10 @@ function r4(){
   abonoPct=Number(neg.abono_pct_basico)||20; // Cada negocio configura su % desde la app (10/20/30); 20% si no lo ha configurado
   abonoMonto=Math.round(precio*(abonoPct/100)/1000)*1000;
   const resto=precio-abonoMonto;
-  const numPago=neg.nequi_numero||neg.daviplata_numero||neg.whatsapp||'—';
-  const metodo=neg.nequi_numero?'Nequi':(neg.daviplata_numero?'Daviplata':'Nequi/Daviplata');
+  const tieneMetodoPago = !!(neg.nequi_numero||neg.daviplata_numero);
+  const numPago=neg.nequi_numero||neg.daviplata_numero||'';
+  const metodo=neg.nequi_numero?'Nequi':'Daviplata';
+  const waNeg=neg.whatsapp?`https://wa.me/57${neg.whatsapp.replace(/\D/g,'')}`:null;
   document.getElementById('p-content').innerHTML=`
     ${err?`<div class="err">${err}</div>`:''}
     <div style="background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:13px;padding:13px;margin-bottom:14px">
@@ -735,19 +737,27 @@ function r4(){
     <div class="abono-box">
       <div class="abono-head"><span>💜 Abono para apartar tu cita</span><span class="abono-amount">$${abonoMonto.toLocaleString('es-CO')}</span></div>
       <p class="abono-desc">Es el ${abonoPct}% del valor del servicio. El resto (<b>$${resto.toLocaleString('es-CO')}</b>) lo pagas en el local. Esto le da seguridad al negocio y tu cupo queda 100% apartado para ti.</p>
+      ${tieneMetodoPago?`
       <div class="abono-transfer">
         <div class="abono-transfer-row">
           <span>Transfiere a ${metodo}</span>
           <button type="button" class="abono-copy" id="abonoCopyBtn" onclick="copiarNum('${numPago}')">${numPago} 📋</button>
         </div>
         <span class="abono-transfer-name">A nombre de: ${neg.nombre}</span>
-      </div>
+      </div>`:`
+      <div class="abono-transfer" style="border-color:rgba(242,184,92,.4);background:rgba(242,184,92,.08)">
+        <span style="font-size:12px;color:var(--gold);font-weight:700">⚠️ Este negocio aún no registró su número de Nequi/Daviplata.</span>
+        <div style="margin-top:8px">
+          ${waNeg?`<a href="${waNeg}" target="_blank" style="color:var(--violet-light);font-size:12px;font-weight:700">💬 Escríbele por WhatsApp para coordinar el pago →</a>`:`<span style="font-size:11px;color:var(--text3)">Contáctalo directamente para coordinar cómo pagar.</span>`}
+        </div>
+      </div>`}
       <label class="abono-upload" id="abonoUploadLabel">
         <input type="file" accept="image/*" id="abonoFile" onchange="onAbonoFile(this)">
         <span id="abonoUploadText">📎 Sube la foto del comprobante</span>
       </label>
     </div>
     <p class="fine" style="margin-bottom:8px">Tu abono no se pierde: si cancelas con tiempo, queda como saldo para tu próxima visita.</p>
+    ${!tieneMetodoPago?`<p class="fine" style="color:var(--gold);margin-bottom:8px">Sube el comprobante de lo que acuerdes directamente con el negocio.</p>`:''}
     <button class="bp" onclick="confirm2()" ${loading?'disabled':''}>${loading?'⏳ Procesando...':'Apartar mi cita'}</button>
     <button class="bb" onclick="step=3;render()">← Volver</button>`;
 }
