@@ -599,7 +599,7 @@ async function init(){
     document.getElementById('promos').style.display='block';
   }
 
-  const {data:e2}=await sb.from('empleados').select('*').eq('negocio_id',neg.id).eq('activo',true);
+  const {data:e2}=await sb.from('empleados_publico').select('*').eq('negocio_id',neg.id).eq('activo',true);
   emps=e2||[];
 
   // Fidelización
