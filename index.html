@@ -525,8 +525,13 @@ async function init(){
   document.getElementById('h-desc').textContent=neg.descripcion||'Tu próximo estilo empieza aquí ✨';
   document.getElementById('tb-nombre').childNodes[0].textContent=neg.nombre+' ';
   const heroImgUrl=neg.portada_url||IMAGENES_CATEGORIA[neg.categoria]||IMAGENES_CATEGORIA.otro;
-  document.getElementById('hero-img').src=heroImgUrl;
-  document.getElementById('tb-logo').src=neg.logo_url||heroImgUrl;
+  const categoriaFallback=IMAGENES_CATEGORIA[neg.categoria]||IMAGENES_CATEGORIA.otro;
+  const heroImgEl=document.getElementById('hero-img');
+  heroImgEl.onerror=function(){this.onerror=null;this.src=categoriaFallback;};
+  heroImgEl.src=heroImgUrl;
+  const tbLogoEl=document.getElementById('tb-logo');
+  tbLogoEl.onerror=function(){this.onerror=null;this.src=categoriaFallback;};
+  tbLogoEl.src=neg.logo_url||heroImgUrl;
   document.getElementById('cta-sub').textContent=`Elige tu servicio y asegura tu cita en ${neg.nombre}`;
 
   // Rating
@@ -621,7 +626,7 @@ async function init(){
     fotosResult.data.forEach(f=>{
       if(!f.url) return;
       fotosHtml+=`<div class="foto-item" onclick="abrirFoto(this)" data-url="${f.url}">
-        <img src="${f.url}" loading="lazy"/>
+        <img src="${f.url}" loading="lazy" onerror="this.closest('.foto-item').style.display='none'"/>
         <div class="foto-overlay"><span>🔍</span></div>
       </div>`;
     });
@@ -633,8 +638,8 @@ async function init(){
       if(f.foto_antes_url){
         transformHtml+=`<div class="ba-card" onclick="this.classList.toggle('toggled')">
           <div class="ba-imgs">
-            <img class="before" src="${f.foto_antes_url}" loading="lazy">
-            <img class="after" src="${f.foto_url}" loading="lazy">
+            <img class="before" src="${f.foto_antes_url}" loading="lazy" onerror="this.closest('.ba-card').style.display='none'">
+            <img class="after" src="${f.foto_url}" loading="lazy" onerror="this.closest('.ba-card').style.display='none'">
           </div>
           <span class="ba-tag tag-before">ANTES</span>
           <span class="ba-tag tag-after">DESPUÉS</span>
@@ -642,7 +647,7 @@ async function init(){
         </div>`;
       } else {
         fotosHtml+=`<div class="foto-item" onclick="abrirFoto(this)" data-url="${f.foto_url}">
-          <img src="${f.foto_url}" loading="lazy"/>
+          <img src="${f.foto_url}" loading="lazy" onerror="this.closest('.foto-item').style.display='none'"/>
           <div class="foto-overlay"><span>🔍</span></div>
         </div>`;
       }
