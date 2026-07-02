@@ -210,9 +210,14 @@ footer{padding:36px 0 110px;border-top:1px solid var(--line);text-align:center;}
 .si-price{font-size:15px;font-weight:800;color:var(--gold);}
 .emp-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;}
 .eb{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:58px;cursor:pointer;border:none;background:none;}
-.ea{width:48px;height:48px;border-radius:13px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--violet-light);border:2px solid var(--line);}
-.eb.on .ea{background:linear-gradient(135deg,var(--violet),var(--magenta));color:#fff;border-color:transparent;}
+.ea{width:48px;height:48px;border-radius:13px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--violet-light);border:2px solid var(--line);position:relative;transition:all .2s;}
+.eb.on .ea{border:3px solid var(--magenta);box-shadow:0 0 0 3px rgba(233,75,209,.25),0 4px 12px rgba(233,75,209,.4);transform:scale(1.06);}
+.eb:not(.on) .ea:not([style*="background-image"]){background:rgba(124,58,237,.12);}
+.eb.on .ea:not([style*="background-image"]){background:linear-gradient(135deg,var(--violet),var(--magenta));color:#fff;}
+.ea-check{display:none;position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:100px;background:var(--magenta);color:#fff;font-size:11px;align-items:center;justify-content:center;border:2px solid var(--bg);z-index:2;}
+.eb.on .ea-check{display:flex;}
 .en{font-size:10px;font-weight:700;color:var(--text2);}
+.eb.on .en{color:var(--magenta);font-weight:800;}
 .ee{font-size:8px;color:var(--text3);}
 .dias{display:flex;gap:7px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;}
 .db{min-width:46px;padding:9px 6px;border-radius:12px;background:rgba(255,255,255,.03);border:1.5px solid var(--line);cursor:pointer;text-align:center;}
@@ -737,11 +742,12 @@ function r2(){
     </div>`:emps.length>1?`
     <label class="fl" style="margin-bottom:7px">👤 ¿Con quién?</label>
     <div class="emp-row">
-      <button class="eb ${empSel===null?'on':''}" onclick="empSel=null;render()"><div class="ea">🎲</div><div class="en">Cualquiera</div></button>
+      <button class="eb ${empSel===null?'on':''}" onclick="empSel=null;render()"><div class="ea">🎲<span class="ea-check">✓</span></div><div class="en">Cualquiera</div></button>
       ${emps.map(e=>`<button class="eb ${empSel===e.id?'on':''}" onclick="empSel='${e.id}';render()">
         ${e.foto_url?`<div class="ea" style="background-image:url('${e.foto_url}');background-size:cover;background-position:center;position:relative">
+          <span class="ea-check">✓</span>
           <span onclick="event.stopPropagation();abrirFoto(this)" data-url="${e.foto_url}" style="position:absolute;bottom:-2px;right:-2px;background:rgba(10,7,16,.75);border-radius:100px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:8px">🔍</span>
-        </div>`:`<div class="ea">${(e.nombre||'?')[0]}</div>`}
+        </div>`:`<div class="ea">${(e.nombre||'?')[0]}<span class="ea-check">✓</span></div>`}
         <div class="en">${e.nombre.split(' ')[0]}</div>${e.especialidad?`<div class="ee">${e.especialidad}</div>`:''}
       </button>`).join('')}
     </div>`:'';
